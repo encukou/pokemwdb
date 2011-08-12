@@ -6,6 +6,7 @@ setup(
     author='En-Cu-Kou',
     author_email='encukou@gmail.com',
     install_requires=[
+        'pyyaml',
     ],
     packages=find_packages(exclude=['ez_setup']),
 )
