@@ -6,6 +6,7 @@ from __future__ import unicode_literals
 import os
 import sys
 import textwrap
+import itertools
 
 from pokemwdb.wikicache import WikiCache
 from pokemwdb import wikiparse
@@ -45,6 +46,9 @@ class TemplateTemplate(object):
         self.name = template.string_name
 
         self._init()
+
+    def _init(self):
+        pass
 
     def check(self):
         errors = []
@@ -107,7 +111,6 @@ class TemplateTemplate(object):
 
             if not match:
                 if expected is None:
-                    print checker, m_param
                     yield "Unexpected template parameter: %s=%s" % (
                                 m_param.name, t_value)
                 elif t_value is None:
@@ -201,6 +204,7 @@ class WikiChecker(object):
         checkers = []
         needed_articles = []
         needed_articles_set = set()
+
         def _run_one(checker):
             new_errors = list(checker())
             for error in new_errors:
@@ -216,7 +220,7 @@ class WikiChecker(object):
             del checkers[:]
             del needed_articles[:]
 
-        for checker, i in zip(self.checkers(), range(20000)):
+        for checker, i in itertools.izip(self.checkers(), range(20000)):
             needs_articles = False
             for article in getattr(checker, 'needed_articles', []):
                 if not self.cache.is_up_to_date(article):
