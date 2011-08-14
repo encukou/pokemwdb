@@ -1,0 +1,75 @@
+
+* Rotom's forms
+[[Rotom]] prev/next navigation: [header] In template parameter tipo2: Expected 'Spettro', got '{{#switch: {{#time: w | }} | 0 | 6=Spettro | 1=Fuoco | 2=Acqua | 3=Ghiaccio | 4=Volante | 5=Erba}}'
+[[Rotom]] prev/next navigation: [footer] In template parameter tipo2: Expected 'Spettro', got '{{#switch: {{#time: w | }} | 0 | 6=Spettro | 1=Fuoco | 2=Acqua | 3=Ghiaccio | 4=Volante | 5=Erba}}'
+
+* Meloetta's forms
+[[Meloetta]] prev/next navigation: [header] In template parameter tipo2: Expected 'Psico', got '{{#switch: {{#expr: {{#time: i | }} mod 2 | }} | 0=psico | 1=lotta}}'
+[[Meloetta]] prev/next navigation: [footer] In template parameter tipo2: Expected 'Psico', got '{{#switch: {{#expr: {{#time: i | }} mod 2 | }} | 0=psico | 1=lotta}}'
+
+* Deoxys' forms
+[[Deoxys]] infobox: Unexpected template parameter: evhp={{#switch: {{#time: w | }} | 0 | 6={{tt | 0 | 0 nella Forma Normale, 0 nella Forma Attacco, e 0 nella Forma Difesa.}} | 1 | 5={{tt | 0 | 0 nella Forma Normale, 0 nella Forma Attacco, e 0 nella Forma Velocità.}} | 2 | 4={{tt | 0 | 0 nella Forma Normale, 0 nella Forma Difesa e 0 nella Forma Velocità.}} | 3={{tt | 1 | 0 nella Forma Attacco, 0 nella Forma Difesa, e 0 nella Forma Velocità.}}}}
+[[Deoxys]] infobox: In template parameter evat: Expected '1', got '{{#switch: {{#time: w | }} | 0 | 6={{tt | 0 | 1 nella Forma Normale, 2 nella Forma Attacco, e 0 nella Forma Difesa.}} | 1 | 5={{tt | 0 | 1 nella Forma Normale, 2 nella Forma Attacco, e 0 nella Forma Velocità.}} | 2 | 4={{tt | 2 | 1 nella Forma Normale, 0 nella Forma Difesa, 0 e nella Forma Velocità.}} | 3={{tt | 1 | 2 nella Forma Attacco, 0 nella Forma Difesa, e 0 nella Forma Velocità.}}}}'
+[[Deoxys]] infobox: Unexpected template parameter: evde={{#switch: {{#time: w | }} | 0 | 6={{tt | 0 | 0 nella Forma Normale, 0 nella Forma Attacco, e 2 nella Forma Difesa.}} | 2 | 4={{tt | 0 | 0 nella Forma Normale, 2 nella Forma Difesa, 0 nella Forma Velocità.}} | 3={{tt | 0 | 0 nella Forma Attacco, 2 nella Forma Difesa, e 0 nella Forma Velocità.}} | 1 | 5={{tt | 2 | 0 nella Forma Normale, 0 nella Forma Attacco, e 0 nella Forma Velocità.}}}}
+[[Deoxys]] infobox: In template parameter evsa: Expected '1', got '{{#switch: {{#time: w | }} | 0 | 6={{tt | 0 | 1 nella Forma Normale, 1 nella Forma Attacco, e 0 nella Forma Difesa.}} | 1 | 5={{tt | 0 | 1 nella Forma Normale, 1 nella Forma Attacco, e 0 nella Forma Velocità.}} | 2 | 4={{tt | 1 |  1 nella Forma Normale, 0 nella Forma Difesa, e 0 nella Forma Velocità.}} | 3={{tt | 1 |  1 nella Forma Attacco, 0 nella Forma Difesa, e 0 nella Forma Velocità.}}}}'
+[[Deoxys]] infobox: Unexpected template parameter: evsd={{#switch: {{#time: w | }} | 0 | 6={{tt | 0 | 0 nella Forma Normale, 0 nella Forma Attacco, e 1 nella Forma Difesa.}} | 2 | 4={{tt | 0 | 0 nella Forma Normale, 1 nella Forma Difesa, e 0 nella Forma Velocità.}} | 3={{tt | 0 | 0 nella Forma Attacco, 1 nella Forma Difesa, e 0 nella Forma Velocità.}} | 1 | 5={{tt | 1 | 0 nella Forma Normale, 0 nella Forma Attacco, e 0 nella Forma Velocità.}}}}
+[[Deoxys]] infobox: In template parameter evsp: Expected '1', got '{{#switch: {{#time: w | }} | 0 | 6={{tt | 3 | 1 nella Forma Normale, 0 nella Forma Attacco, e 0 nella Forma Difesa.}} | 1 | 5={{tt | 0 | 1 nella Forma Normale, 0 nella Forma Attacco, e 3 nella Forma Velocità.}} | 2 | 4={{tt | 0 | 1 nella Forma Normale, 0 nella Forma Difesa, e 3 nella Forma Velocità.}} | 3={{tt | 1 | 0 nella Forma Attacco, 0 nella Forma Difesa, e 3 nella Forma Velocità.}}}}'
+
+* Wormadam's forms
+[[Wormadam]] infobox: In template parameter ntipi: Expected '2', got '4'
+[[Wormadam]] infobox: Unknown template parameter: tipo3=Terra
+[[Wormadam]] infobox: Unknown template parameter: tipo4=Acciaio
+[[Wormadam]] infobox: Unknown template parameter: forme=3
+[[Wormadam]] infobox: Unknown template parameter: forme2=Manto Pianta
+[[Wormadam]] infobox: Unknown template parameter: forme1=Manto Sabbia
+[[Wormadam]] infobox: Unknown template parameter: forme3=Manto Scarti
+[[Wormadam]] infobox: Unexpected template parameter: evhp=0
+[[Wormadam]] infobox: Unexpected template parameter: evat=0
+[[Wormadam]] infobox: Unexpected template parameter: evde={{#switch: {{#expr: {{#time: z | }} mod 3 | }} | 0={{tt | 0 | 2 nel Manto Sabbia e 1 nel Manto Scarti.}} | 1={{tt | 2 | 0 nel Manto Pianta e 1 nel Manto Scarti.}} | 2={{tt | 1 | 0 nel Manto Pianta e 2 nel Manto Sabbia.}}}}
+[[Wormadam]] infobox: Unexpected template parameter: evsa=0
+[[Wormadam]] infobox: In template parameter evsd: Expected '2', got '{{#switch: {{#expr: {{#time: z | }} mod 3 | }} | 0={{tt | 2 | 0 nel Manto Sabbia e 1 nel Manto Scarti.}} | 1={{tt | 0 | 2 nel Manto Pianta e 1 nel Manto Scarti.}} | 2={{tt | 1 | 2 nel Manto Pianta e 0 nel Manto Sabbia.}}}}'
+[[Wormadam]] infobox: Unexpected template parameter: evsp=0
+
+* New Johto dex notes
+[[Lickilicky]] infobox: In template parameter jdex: Expected '181', got '181{{tt | * | Non presente nella seconda generazione}}'
+[[Tangrowth]] infobox: In template parameter jdex: Expected '183', got '183{{tt | * | Non presente nella seconda generazione}}'
+[[Yanmega]] infobox: In template parameter jdex: Expected '102', got '102{{tt | * | Quarta generazione}}'
+[[Mamoswine]] infobox: In template parameter jdex: Expected '197', got '197{{tt | * | Non presente nella seconda generazione}}'
+[[Ambipom]] infobox: In template parameter jdex: Expected '124', got '124{{tt | * | Non disponibile nella seconda generazione}}'
+
+* Rotom's forms
+[[Rotom]] infobox: In template parameter ntipi: Expected '2', got '7'
+[[Rotom]] infobox: Unknown template parameter: tipo3=Fuoco
+[[Rotom]] infobox: Unknown template parameter: tipo4=Acqua
+[[Rotom]] infobox: Unknown template parameter: tipo5=Ghiaccio
+[[Rotom]] infobox: Unknown template parameter: tipo6=Volante
+[[Rotom]] infobox: Unknown template parameter: tipo7=Erba
+[[Rotom]] infobox: Unknown template parameter: forme=6
+[[Rotom]] infobox: Unknown template parameter: forme1=Rotom Normale
+[[Rotom]] infobox: Unknown template parameter: forme2=Rotom Calore
+[[Rotom]] infobox: Unknown template parameter: forme3=Rotom Lavaggio
+[[Rotom]] infobox: Unknown template parameter: forme4=Rotom Gelo
+[[Rotom]] infobox: Unknown template parameter: forme5=Rotom Vortice
+[[Rotom]] infobox: Unknown template parameter: forme6=Rotom Taglio
+
+* Meloetta's forms
+[[Meloetta]] infobox: Unknown template parameter: forme=2
+[[Meloetta]] infobox: Unknown template parameter: forme1=Forma Canto
+[[Meloetta]] infobox: Unknown template parameter: forme2=Forma Danza
+[[Meloetta]] infobox: In template parameter ntipi: Expected '2', got '3'
+[[Meloetta]] infobox: Unknown template parameter: tipo3=Lotta
+[[Meloetta]] infobox: In template parameter cicliuovo: Expected '120', got '20'
+[[Meloetta]] infobox: Unexpected template parameter: evat={{#switch: {{#expr: {{#time: i | }} mod 2 | }} | 0={{tt | 0 | 1 nella Forma Danza}} | 1={{tt | 1 | 0 nella Forma Canto}}}}
+[[Meloetta]] infobox: Unexpected template parameter: evde={{#switch: {{#expr: {{#time: i | }} mod 2 | }} | 0={{tt | 0 | 1 nella Forma Danza}} | 1={{tt | 1 | 0 nella Forma Canto}}}}
+[[Meloetta]] infobox: In template parameter evsa: Expected '1', got '{{#switch: {{#expr: {{#time: i | }} mod 2 | }} | 0={{tt | 1 | 0 nella Forma Danza}} | 1={{tt | 0 | 1 nella Forma Canto}}}}'
+[[Meloetta]] infobox: In template parameter evsd: Expected '1', got '{{#switch: {{#expr: {{#time: i | }} mod 2 | }} | 0={{tt | 1 | 0 nella Forma Danza}} | 1={{tt | 0 | 1 nella Forma Canto}}}}'
+[[Meloetta]] infobox: In template parameter tassocattura: Expected '3', got '5'
+[[Meloetta]] infobox: In template parameter body: Expected '12', got 'Sconosciuto'
+[[Meloetta]] infobox: Unknown template parameter: disptype={{#switch: {{#expr: {{#time: i | }} mod 2 | }} | 0=psico | 1=lotta}}
+
+* Darmanitan's forms
+[[Darmanitan]] infobox: Unknown template parameter: forme=2
+[[Darmanitan]] infobox: Unknown template parameter: forme1=Normale
+[[Darmanitan]] infobox: Unknown template parameter: forme2=Stato Zen
+[[Darmanitan]] infobox: In template parameter ntipi: Expected '1', got '3'
+[[Darmanitan]] infobox: Unknown template parameter: tipo3=Psico

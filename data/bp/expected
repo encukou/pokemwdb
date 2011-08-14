@@ -1,0 +1,115 @@
+
+* Nidorans link to a common disambig page
+[[Nidoran♀ (Pokémon)]] prev/next header: In template parameter species: Expected 'Nidoran♀', got 'Nidoran'
+[[Nidoran♂ (Pokémon)]] prev/next header: In template parameter species: Expected 'Nidoran♂', got 'Nidoran'
+
+
+* Misdreavus' effort yield change isn't in the database yet
+[[Misdreavus (Pokémon)]] infobox: Unexpected template parameter: evsa=1{{tt | * | Gen II and III only}}
+
+
+* Updated Johto dex notes
+[[Ambipom (Pokémon)]] infobox: In template parameter jdex: Expected '124', got '124{{tt | * | Unavailable in Generation II}}'
+[[Lickilicky (Pokémon)]] infobox: In template parameter jdex: Expected '181', got '181{{tt | * | Unavailable in Generation II}}'
+[[Tangrowth (Pokémon)]] infobox: In template parameter jdex: Expected '183', got '183{{tt | * | Unavailable in Generation II}}'
+[[Yanmega (Pokémon)]] infobox: In template parameter jdex: Expected '102', got '102{{tt | * | Unavailable in Generation II}}'
+[[Mamoswine (Pokémon)]] infobox: In template parameter jdex: Expected '197', got '197{{tt | * | Unavailable in Generation II}}'
+
+* Castform's forms
+[[Castform (Pokémon)]] prev/next header: In template parameter type: Expected 'Normal', got '{{#switch: {{#expr: {{#time: H | }} mod 4 | }} | 0=Normal | 1=Fire | 2=Water | 3=Ice}}'
+[[Castform (Pokémon)]] infobox: In template parameter type1: Expected 'Normal', got '{{#switch: {{#expr: {{#time: H | }} mod 4 | }} | 0=Normal | 1=Fire | 2=Water | 3=Ice}}'
+
+* Deoxys' forms
+[[Deoxys (Pokémon)]] infobox: In template parameter evat: Expected '1', got '{{#switch: {{#time: w | }} | 0 | 6={{tt | 0 | 1 in Normal Forme, 2 in Attack Forme, and 0 in Defense Forme.}} | 1 | 5={{tt | 0 | 1 in Normal Forme, 2 in Attack Forme, and 0 in Speed Forme.}} | 2 | 4={{tt | 2 | 1 in Normal Forme, 0 in Defense Forme, 0 and in Speed Forme.}} | 3={{tt | 1 | 2 in Attack Forme, 0 in Defense Forme, and 0 in Speed Forme.}}}}'
+[[Deoxys (Pokémon)]] infobox: Unexpected template parameter: evde={{#switch: {{#time: w | }} | 0 | 6={{tt | 0 | 0 in Normal Forme, 0 in Attack Forme, and 2 in Defense Forme.}} | 2 | 4={{tt | 0 | 0 in Normal Forme, 2 in Defense Forme, 0 in Speed Forme.}} | 3={{tt | 0 | 0 in Attack Forme, 2 in Defense Forme, and 0 in Speed Forme.}} | 1 | 5={{tt | 2 | 0 in Normal Forme, 0 in Attack Forme, and 0 in Speed Forme.}}}}
+[[Deoxys (Pokémon)]] infobox: In template parameter evsa: Expected '1', got '{{#switch: {{#time: w | }} | 0 | 6={{tt | 0 | 1 in Normal Forme, 1 in Attack Forme, and 0 in Defense Forme.}} | 1 | 5={{tt | 0 | 1 in Normal Forme, 1 in Attack Forme, and 0 in Speed Forme.}} | 2 | 4={{tt | 1 |  1 in Normal Forme, 0 in Defense Forme, and 0 in Speed Forme.}} | 3={{tt | 1 |  1 in Attack Forme, 0 in Defense Forme, and 0 in Speed Forme.}}}}'
+[[Deoxys (Pokémon)]] infobox: Unexpected template parameter: evsd={{#switch: {{#time: w | }} | 0 | 6={{tt | 0 | 0 in Normal Forme, 0 in Attack Forme, and 1 in Defense Forme.}} | 2 | 4={{tt | 0 | 0 in its Normal Forme, 1 in its Defense Forme, and 0 in its Speed Forme.}} | 3={{tt | 0 | 0 in Attack Forme, 1 in Defense Forme, and 0 in Speed Forme.}} | 1 | 5={{tt | 1 | 0 in Normal Forme, 0 in Attack Forme, and 0 in Speed Forme.}}}}
+[[Deoxys (Pokémon)]] infobox: In template parameter evsp: Expected '1', got '{{#switch: {{#time: w | }} | 0 | 6={{tt | 3 | 1 in Normal Forme, 0 in Attack Forme, and 0 in Defense Forme.}} | 1 | 5={{tt | 0 | 1 in Normal Forme, 0 in Attack Forme, and 3 in Speed Forme.}} | 2 | 4={{tt | 0 | 1 in Normal Forme, 0 in Defense Forme, and 3 in Speed Forme.}} | 3={{tt | 1 | 0 in Attack Forme, 0 in Defense Forme, and 3 in Speed Forme.}}}}'
+
+* Wormadam's forms
+[[Wormadam (Pokémon)]] prev/next header: In template parameter type2: Expected 'Grass', got '{{#switch: {{#expr: {{#time: z | }} mod 3 | }} | 0=Grass | 1=Ground | 2=Steel}}'
+[[Wormadam (Pokémon)]] infobox: In template parameter typen: Expected '2', got '4'
+[[Wormadam (Pokémon)]] infobox: Unknown template parameter: type3=Ground
+[[Wormadam (Pokémon)]] infobox: Unknown template parameter: type4=Steel
+[[Wormadam (Pokémon)]] infobox: Unknown template parameter: forme=3
+[[Wormadam (Pokémon)]] infobox: Unknown template parameter: forme1=Plant Cloak
+[[Wormadam (Pokémon)]] infobox: Unknown template parameter: forme2=Sandy Cloak
+[[Wormadam (Pokémon)]] infobox: Unknown template parameter: forme3=Trash Cloak
+[[Wormadam (Pokémon)]] infobox: Unexpected template parameter: evde={{#switch: {{#expr: {{#time: z | }} mod 3 | }} | 0={{tt | 0 | 2 in Sandy Cloak and 1 in Trash Cloak.}} | 1={{tt | 2 | 0 in Plant Cloak and 1 in Trash Cloak.}} | 2={{tt | 1 | 0 in Plant Cloak and 2 in Sandy Cloak.}}}}
+[[Wormadam (Pokémon)]] infobox: In template parameter evsd: Expected '2', got '{{#switch: {{#expr: {{#time: z | }} mod 3 | }} | 0={{tt | 2 | 0 in Sandy Cloak and 1 in Trash Cloak.}} | 1={{tt | 0 | 2 in Plant Cloak and 1 in Trash Cloak.}} | 2={{tt | 1 | 2 in Plant Cloak and 0 in Sandy Cloak.}}}}'
+
+* Rotom's forms
+[[Rotom (Pokémon)]] prev/next header: In template parameter type2: Expected 'Ghost', got '{{#switch: {{#time: w | }} | 0 | 6=Ghost | 1=Fire | 2=Water | 3=Ice | 4=Flying | 5=Grass}}'
+[[Rotom (Pokémon)]] infobox: In template parameter typen: Expected '2', got '7'
+[[Rotom (Pokémon)]] infobox: Unknown template parameter: type3=Fire
+[[Rotom (Pokémon)]] infobox: Unknown template parameter: type4=Water
+[[Rotom (Pokémon)]] infobox: Unknown template parameter: type5=Ice
+[[Rotom (Pokémon)]] infobox: Unknown template parameter: type6=Flying
+[[Rotom (Pokémon)]] infobox: Unknown template parameter: type7=Grass
+[[Rotom (Pokémon)]] infobox: Unknown template parameter: forme=6
+[[Rotom (Pokémon)]] infobox: Unknown template parameter: forme1=Normal Rotom
+[[Rotom (Pokémon)]] infobox: Unknown template parameter: forme2=Heat Rotom
+[[Rotom (Pokémon)]] infobox: Unknown template parameter: forme3=Wash Rotom
+[[Rotom (Pokémon)]] infobox: Unknown template parameter: forme4=Frost Rotom
+[[Rotom (Pokémon)]] infobox: Unknown template parameter: forme5=Fan Rotom
+[[Rotom (Pokémon)]] infobox: Unknown template parameter: forme6=Mow Rotom
+[[Rotom (Pokémon)]] infobox: Unknown template parameter: disptype={{#switch: {{#time: w | }} | 0 | 6=Ghost | 1=Fire | 2=Water | 3=Ice | 4=Flying | 5=Grass}}
+
+* Giratina's forms
+[[Giratina (Pokémon)]] infobox: Unknown template parameter: forme=2
+[[Giratina (Pokémon)]] infobox: Unknown template parameter: forme1=Altered Forme
+[[Giratina (Pokémon)]] infobox: Unknown template parameter: forme2=Origin Forme
+[[Giratina (Pokémon)]] infobox: Unknown template parameter: height-ftin2=22'08"
+[[Giratina (Pokémon)]] infobox: Unknown template parameter: height-m2=6.9
+[[Giratina (Pokémon)]] infobox: Unknown template parameter: weight-lbs2=1433.0
+[[Giratina (Pokémon)]] infobox: Unknown template parameter: weight-kg2=650.0
+[[Giratina (Pokémon)]] infobox: In template parameter abilityn: Expected '1', got 'alt'
+[[Giratina (Pokémon)]] infobox: In template parameter ability2: Expected 'empty or missing', got 'Levitate'
+[[Giratina (Pokémon)]] infobox: In template parameter body: Expected '10', got '{{#ifexpr: ({{#time: H | }} mod 2) = 0 | 10 | 02}}'
+
+* Shaymin's forms
+[[Shaymin (Pokémon)]] infobox: Unknown template parameter: crysp=025S
+[[Shaymin (Pokémon)]] infobox: In template parameter typen: Expected '1', got '3'
+[[Shaymin (Pokémon)]] infobox: Unknown template parameter: type3=Flying
+[[Shaymin (Pokémon)]] infobox: Unknown template parameter: forme=2
+[[Shaymin (Pokémon)]] infobox: Unknown template parameter: forme1=Land Forme
+[[Shaymin (Pokémon)]] infobox: Unknown template parameter: forme2=Sky Forme
+[[Shaymin (Pokémon)]] infobox: Unknown template parameter: height-ftin2=1'04"
+[[Shaymin (Pokémon)]] infobox: Unknown template parameter: height-m2=0.4
+[[Shaymin (Pokémon)]] infobox: Unknown template parameter: weight-lbs2=11.5
+[[Shaymin (Pokémon)]] infobox: Unknown template parameter: weight-kg2=5.2
+[[Shaymin (Pokémon)]] infobox: In template parameter abilityn: Expected '1', got 'alt'
+[[Shaymin (Pokémon)]] infobox: In template parameter ability2: Expected 'empty or missing', got 'Serene Grace'
+[[Shaymin (Pokémon)]] infobox: In template parameter evhp: Expected '3', got '{{#switch: {{#time: G | }} | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 | 15 | 16 | 17 | 18 | 19={{tt | 0 | 3 in Land Forme}} | {{tt | 3 | 0 in Sky Forme}}}}'
+[[Shaymin (Pokémon)]] infobox: Unexpected template parameter: evsp={{#switch: {{#time: G | }} | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 | 15 | 16 | 17 | 18 | 19={{tt | 3 | 0 in Land Forme}} | {{tt | 0 | 3 in Sky Forme}}}}
+[[Shaymin (Pokémon)]] infobox: Unknown template parameter: disptype={{#switch: {{#time: G | }} | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 | 15 | 16 | 17 | 18 | 19=flying}}
+
+* Basculin's forms
+[[Basculin (Pokémon)]] infobox: Unknown template parameter: forme=2
+[[Basculin (Pokémon)]] infobox: Unknown template parameter: forme1=Red-Striped
+[[Basculin (Pokémon)]] infobox: Unknown template parameter: forme2=Blue-Striped
+
+* Darmanitan's forms
+[[Darmanitan (Pokémon)]] prev/next header: Unexpected template parameter: type2=Psychic
+[[Darmanitan (Pokémon)]] infobox: Unknown template parameter: forme=2
+[[Darmanitan (Pokémon)]] infobox: Unknown template parameter: forme1=Standard Mode
+[[Darmanitan (Pokémon)]] infobox: Unknown template parameter: forme2=Zen Mode
+[[Darmanitan (Pokémon)]] infobox: In template parameter typen: Expected '1', got '3'
+[[Darmanitan (Pokémon)]] infobox: Unknown template parameter: type3=Psychic
+[[Darmanitan (Pokémon)]] infobox: In template parameter evat: Expected '2', got '{{#ifexpr: {{#expr:{{CURRENTDAY | }} - {{REVISIONDAY | }} | }} < 7 | {{tt | 2 | 0 in Zen Mode}} | {{tt | 0 | 2 when Normal}}}}'
+[[Darmanitan (Pokémon)]] infobox: Unexpected template parameter: evsa={{#ifexpr: {{#expr:{{CURRENTDAY | }} - {{REVISIONDAY | }} | }} < 7 | {{tt | 0 | 2 in Zen Mode}} | {{tt | 2 | 0 when Normal}}}}
+
+* Meloetta's forms
+[[Meloetta (Pokémon)]] prev/next header: In template parameter type2: Expected 'Psychic', got '{{#switch: {{#expr: {{#time: i | }} mod 2 | }} | 0=psychic | 1=fighting}}'
+[[Meloetta (Pokémon)]] infobox: Unknown template parameter: forme=2
+[[Meloetta (Pokémon)]] infobox: Unknown template parameter: forme1=Aria Forme
+[[Meloetta (Pokémon)]] infobox: Unknown template parameter: forme2=Pirouette Forme
+[[Meloetta (Pokémon)]] infobox: In template parameter typen: Expected '2', got '3'
+[[Meloetta (Pokémon)]] infobox: Unknown template parameter: type3=Fighting
+[[Meloetta (Pokémon)]] infobox: Unexpected template parameter: evat={{#switch: {{#expr: {{#time: i | }} mod 2 | }} | 0={{tt | 0 | 1 in Pirouette Forme}} | 1={{tt | 1 | 0 in Aria Forme}}}}
+[[Meloetta (Pokémon)]] infobox: Unexpected template parameter: evde={{#switch: {{#expr: {{#time: i | }} mod 2 | }} | 0={{tt | 0 | 1 in Pirouette Forme}} | 1={{tt | 1 | 0 in Aria Forme}}}}
+[[Meloetta (Pokémon)]] infobox: In template parameter evsa: Expected '1', got '{{#switch: {{#expr: {{#time: i | }} mod 2 | }} | 0={{tt | 1 | 0 in Pirouette Forme}} | 1={{tt | 0 | 1 in Aria Forme}}}}'
+[[Meloetta (Pokémon)]] infobox: In template parameter evsd: Expected '1', got '{{#switch: {{#expr: {{#time: i | }} mod 2 | }} | 0={{tt | 1 | 0 in Pirouette Forme}} | 1={{tt | 0 | 1 in Aria Forme}}}}'
+[[Meloetta (Pokémon)]] infobox: Unknown template parameter: evspk=1
+[[Meloetta (Pokémon)]] infobox: In template parameter catchrate: Expected '3', got '5'
+[[Meloetta (Pokémon)]] infobox: Unknown template parameter: disptype={{#switch: {{#expr: {{#time: i | }} mod 2 | }} | 0=psychic | 1=fighting}}
