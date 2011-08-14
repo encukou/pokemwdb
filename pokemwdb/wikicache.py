@@ -234,7 +234,7 @@ class WikiCache(object):
                 page = pages_by_name[page_info['title']]
                 if 'missing' in page_info:
                         page.missing = True
-                        page.up_to_date = False
+                        page.up_to_date = True
                         page.revision = 0
                         page.contents = None
                         self.session.add(page)
