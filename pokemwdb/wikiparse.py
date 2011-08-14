@@ -18,9 +18,8 @@ def re_partition(re, string):
         return string, '', ''
 
 def make_wikiname(string):
-    string = string.strip()
+    string = unicode(string).strip()
     string = string[0].upper() + string[1:]
-    string.replace('_', ' ')
     return string
 
 ### Visitors
@@ -49,6 +48,25 @@ class BreadthFirstVisitor(Visitor):
             node = nodes_left.popleft()
             self.dispatch(node)
             node.visit(nodes_left.append)
+
+def find(node, type=None, predicate=lambda node: True):
+    class Find(BreadthFirstVisitor):
+        def __init__(self):
+            if type:
+                self.predicate = lambda node: (isinstance(node, type) and
+                        predicate(node))
+            else:
+                self.predicate = predicate
+            self.result = None
+
+        def visit_any(self, node):
+            if self.predicate(node):
+                self.result = node
+                self.visit = lambda node: None
+
+    find = Find()
+    find.visit(node)
+    return find.result
 
 ### Nodes
 
@@ -87,6 +105,19 @@ class Template(object):
     def string_name(self):
         return make_wikiname(unicode(self.name))
 
+    @property
+    def normalized_params(self):
+        number = 1
+        normalized = {}
+        for param in self.params:
+            if param.name:
+                normalized[unicode(param.name).strip()] = unicode(param.value
+                        ).strip()
+            else:
+                normalized[unicode(number)] = unicode(param.value).strip()
+                number += 1
+        return normalized
+
     def __unicode__(self):
         return "{{" + unicode(self.name) + ' | ' + ' | '.join(unicode(x) for x in self.params) + "}}"
 
@@ -106,13 +137,11 @@ class TemplateArgument(object):
         self.name = name
         self.value = value
 
-    @property
-    def string_name(self):
-        if self.name:
-            return make_wikiname(unicode(self.name))
-
     def __unicode__(self):
-        return unicode(self.name) + '=' + unicode(self.value)
+        if self.name:
+            return unicode(self.name) + '=' + unicode(self.value)
+        else:
+            return unicode(self.value)
 
     def visit(self, visitor):
         if self.name:
@@ -196,7 +225,7 @@ def parse_template_params(tokens):
         else:
             raise ValueError(tokens[0], tokens)
     # No end of template! Backtrace.
-    print 'WIKITEXT PARSE WARNING: Bad end of template!'
+    print 'WIKITEXT PARSE WARNING: Bad end of template!', tokens_saved[:50]
     tokens[:] = tokens_saved
     return None
 

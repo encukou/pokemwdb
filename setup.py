@@ -7,6 +7,8 @@ setup(
     author_email='encukou@gmail.com',
     install_requires=[
         'pyyaml',
+        'pokedex',
+        'SQLAlchemy>=0.7',
     ],
     packages=find_packages(exclude=['ez_setup']),
 )
