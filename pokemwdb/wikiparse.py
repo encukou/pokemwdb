@@ -49,7 +49,7 @@ class BreadthFirstVisitor(Visitor):
             self.dispatch(node)
             node.visit(nodes_left.append)
 
-def find(node, type=None, predicate=lambda node: True):
+def find(node, type=None, predicate=lambda node: True, find_all=False):
     class Find(BreadthFirstVisitor):
         def __init__(self):
             if type:
@@ -57,16 +57,23 @@ def find(node, type=None, predicate=lambda node: True):
                         predicate(node))
             else:
                 self.predicate = predicate
-            self.result = None
+            self.results = []
 
         def visit_any(self, node):
             if self.predicate(node):
-                self.result = node
-                self.visit = lambda node: None
+                self.results.append(node)
+                if not find_all:
+                    self.visit = lambda node: None
 
     find = Find()
     find.visit(node)
-    return find.result
+    if find_all:
+        return find.results
+    else:
+        try:
+            return find.results[0]
+        except IndexError:
+            return None
 
 ### Nodes
 
