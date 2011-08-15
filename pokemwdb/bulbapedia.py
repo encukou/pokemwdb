@@ -237,6 +237,7 @@ class PokemonInfobox(TemplateTemplate):
     def eggcycles(self, v): return self.species.hatch_counter
     pron = ignored()
     size = ignored()
+    disptype = ignored()
 
     odex = ignored()
     fdex = ignored()
@@ -244,6 +245,236 @@ class PokemonInfobox(TemplateTemplate):
     opdex = ignored()
 
     params = {'1': ignored()}  # XXX
+
+def game_text(text):
+    return text.replace('\n', ' ')
+
+mdash = ('—', '&mdash;', 'N/A')
+
+class MoveInfobox(TemplateTemplate):
+    def _init(self):
+        self.flags = set(f.identifier for f in self.move.flags)
+
+        self.machines = dict((m.version_group.generation_id, m.machine_number)
+                for m in self.checker.checker.session.query(tables.Machine)
+                        .filter_by(move_id=self.move.id))
+
+        self.tutors = set(pm.version_group.versions[0].identifier for pm in
+                self.move.pokemon_moves if pm.method.identifier == 'tutor')
+
+    def n(self, v): return self.move.id if self.move.id < 10000 else 1000
+
+    def name(self, v): return self.move.name
+
+    def jname(self, v):
+        return self.move.name_map[self.dbget(tables.Language, 'ja')]
+
+    jtrans = ignored()
+    jtranslit = ignored()
+
+    @missing_on(IndexError)
+    def desc(self, v): return game_text(self.move.flavor_text[-1].flavor_text)
+
+    def type(self, v): return self.move.type.name
+
+    def _changelog(attrname):
+        gens = '0 I II III IV V'.split()
+        def wrapper(func):
+            def get(self, v):
+                history = dict((c.changed_in, getattr(c, attrname)) for
+                        c in self.move.changelog)
+                low = high = self.move.generation_id
+                changes = []
+                for vg in list(self.checker.checker.session.query(tables.VersionGroup)) + [None]:
+                    try:
+                        new_value = history[vg]
+                    except KeyError:
+                        new_value = None
+                    if new_value is None:
+                        pass
+                    else:
+                        if low == high:
+                            geninfo = gens[high]
+                        else:
+                            geninfo = '%s to %s' % (gens[low], gens[high])
+                        value = func(new_value)
+                        if isinstance(value, tuple):
+                            value = value[0]
+                        low = vg.generation_id
+                        changes.append('%s in Generation %s' % (value, geninfo))
+                    if vg:
+                        high = vg.generation_id
+                value = func(getattr(self.move, attrname))
+                if changes:
+                    if isinstance(value, tuple):
+                        value = value[0]
+                    return '{{tt | %s | %s}}' % (value, ', '.join(changes))
+                else:
+                    return value
+            return get
+        return wrapper
+
+    @_changelog('pp')
+    def basepp(pp): return pp or mdash
+    def maxpp(self, v): return self.move.pp * 8 // 5 if self.move.pp else mdash
+
+    @_changelog('accuracy')
+    def accuracy(accuracy):
+        if accuracy in (0, 100, None):
+            return (accuracy, ) + mdash
+        else:
+            return accuracy
+
+    def priority(self, v):
+        if not self.move.priority:
+            return ('' or None)
+        elif self.move.priority > 0:
+            return '+%s' % self.move.priority
+        else:
+            return self.move.priority
+
+    @_changelog('power')
+    def power(power):
+        if power == 1:
+            return mdash + ('Varies', )
+        else:
+            return power or mdash
+
+
+    def category(self, v):
+        try:
+            return self.move.contest_type.name
+        except AttributeError:
+            if self.move.type.identifier == 'shadow':
+                return 'Shadow'
+
+    @missing_on(AttributeError, (None, 0))
+    def appeal(self, v):
+        if self.move.generation_id <= 3:
+            return self.move.contest_effect.appeal
+        elif self.move.generation_id <= 4:
+            return self.move.super_contest_effect.appeal
+
+    @missing_on(AttributeError, (None, 0))
+    def jam(self, v): return self.move.contest_effect.jam
+
+    @missing_on(AttributeError)
+    def appealsc(self, v): return self.move.super_contest_effect.appeal
+
+    def _flag(self, identifier, true_val=True):
+        if (identifier in self.flags) == true_val:
+            return 'yes'
+        else:
+            return ('no', None)
+
+    def touches(self, v): return self._flag('contact')
+    # charge
+    def recharge(self, v): return self._flag('recharge')
+    def protect(self, v): return self._flag('protect')
+    def magiccoat(self, v): return self._flag('reflectable')
+    def snatch(self, v): return self._flag('snatch')
+    def mirrormove(self, v): return self._flag('mirror')
+    def punch(self, v): return self._flag('punch')
+    def sound(self, v): return self._flag('sound')
+    # defrost
+    # distance [handled in `target` below]
+    # heal
+    #def ignoresub(self, v): return self._flag('authentic', true_val=False)
+
+    def _machine(gen, hm=False):
+        def tm(self, v):
+            if gen in self.machines:
+                if not hm and self.machines[gen] < 100:
+                    return 'yes'
+                if hm and self.machines[gen] > 100:
+                    return 'yes'
+
+        def tm_num(self, v):
+            if tm(self, v):
+                return format(self.machines[gen] % 100, '02')
+
+        if hm:
+            tm.name = 'hm%s' % gen
+            tm_num.name = 'hm#%s' % gen
+        else:
+            tm.name = 'tm%s' % gen
+            tm_num.name = 'tm#%s' % gen
+
+        return tm, tm_num
+
+    tm1, tm_1 = _machine(1)
+    tm2, tm_2 = _machine(2)
+    tm3, tm_3 = _machine(3)
+    tm4, tm_4 = _machine(4)
+    tm5, tm_5 = _machine(5)
+    hm1, hm_1 = _machine(1, True)
+    hm2, hm_2 = _machine(2, True)
+    hm3, hm_3 = _machine(3, True)
+    hm4, hm_4 = _machine(4, True)
+    hm5, hm_5 = _machine(5, True)
+
+    def mtc(self, v): return 'yes' if 'crystal' in self.tutors else ('no', None)
+    def mte(self, v): return 'yes' if 'emerald' in self.tutors else ('no', None)
+    def mtfl(self, v): return 'yes' if 'firered' in self.tutors else ('no', None)
+    def mtdp(self, v): return 'yes' if 'diamond' in self.tutors else ('no', None)
+    def mtpt(self, v): return 'yes' if 'platinum' in self.tutors else ('no', None)
+    def mths(self, v): return 'yes' if 'heartgold' in self.tutors else ('no', None)
+    def mtbw(self, v): return 'yes' if 'black' in self.tutors else ('no', None)
+
+    def na(self, v):
+        if self.machines or self.tutors:
+            return 'yes'
+        else:
+            return ('no', None)
+
+    mtxd = ignored()  # XXX: XD tutors not yet in DB
+    na = ignored()  # XXX: XD tutors not yet in DB
+
+    kingsrock = ignored()  # XXX
+    brightpowder = ignored()  # XXX
+    flag7 = ignored()
+    flag8 = ignored()
+
+    def gen(self, v): return '0 I II III IV V'.split()[self.move.generation_id]
+
+    def damagecategory(self, v):
+        return {
+                'physical': 'Physical',
+                'special': 'Special',
+                'non-damaging': 'Status',
+            }[self.move.damage_class.identifier]
+
+    def target(self, v):
+        return {
+                'all-opponents': 'all',
+                'user': 'self',
+                'selected-pokemon':
+                        'any' if 'distance' in self.flags else 'anyadjacent',
+                'random-opponent': 'foe',
+                'users-field': 'team',
+                'all-other-pokemon':
+                        'all' if 'distance' in self.flags else 'alladjacent',
+                'specific-move': 'any',
+                'entire-field': 'all',
+                'opponents-field': 'foes',
+                'ally': 'ally',
+                'user-or-ally': 'selfadjacentally',
+            }[self.move.target.identifier]
+
+    cdesc = ignored()  # XXX
+    scdesc = ignored()  # XXX
+    bdesc = ignored()  # XXX
+
+    field = ignored()  # XXX
+
+    pokefordex = ignored()
+    footnotes = ignored()
+    gameimage = ignored()
+    gameimage2 = ignored()
+    gameimagewidth = ignored()
+
+    spm = ignored()  # XXX: What's this?
+
 
 class PokemonChecker(ArticleChecker):
     def __init__(self, checker, species):
@@ -266,6 +497,18 @@ class CheckPokemonInfobox(PokemonChecker):
         template = self.find_template('PokémonInfobox')
         return PokemonInfobox(self, template, species=self.species).check()
 
+class MoveChecker(ArticleChecker):
+    def __init__(self, checker, move):
+        ArticleChecker.__init__(self, checker, move.name + ' (move)')
+        self.move = move
+
+class CheckMoveInfobox(MoveChecker):
+    name = 'infobox'
+
+    def check(self):
+        template = self.find_template('MoveInfobox')
+        return MoveInfobox(self, template, move=self.move).check()
+
 class BulbapediaChecker(WikiChecker):
     base_url = 'http://bulbapedia.bulbagarden.net/w/api.php?'
     path = 'data/bp'
@@ -276,8 +519,12 @@ class BulbapediaChecker(WikiChecker):
 
     def checkers(self):
         for species in self.session.query(tables.PokemonSpecies):
+            pass
             yield CheckPokemonNavigation(self, species)
             yield CheckPokemonInfobox(self, species)
+        for move in self.session.query(tables.Move):
+            pass
+            yield CheckMoveInfobox(self, move)
 
 if __name__ == '__main__':
     BulbapediaChecker().check()
