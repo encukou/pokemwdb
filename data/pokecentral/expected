@@ -3,6 +3,10 @@
 [[Rotom]] prev/next navigation: [header] In template parameter tipo2: Expected 'Spettro', got '{{#switch: {{#time: w | }} | 0 | 6=Spettro | 1=Fuoco | 2=Acqua | 3=Ghiaccio | 4=Volante | 5=Erba}}'
 [[Rotom]] prev/next navigation: [footer] In template parameter tipo2: Expected 'Spettro', got '{{#switch: {{#time: w | }} | 0 | 6=Spettro | 1=Fuoco | 2=Acqua | 3=Ghiaccio | 4=Volante | 5=Erba}}'
 
+
+* Misdreavus EXP note
+[[Misdreavus]] infobox: Unexpected template parameter: evsa=1{{tt | * | Solo Gen II e III}}
+
 * Meloetta's forms
 [[Meloetta]] prev/next navigation: [header] In template parameter tipo2: Expected 'Psico', got '{{#switch: {{#expr: {{#time: i | }} mod 2 | }} | 0=psico | 1=lotta}}'
 [[Meloetta]] prev/next navigation: [footer] In template parameter tipo2: Expected 'Psico', got '{{#switch: {{#expr: {{#time: i | }} mod 2 | }} | 0=psico | 1=lotta}}'
@@ -73,3 +77,19 @@
 [[Darmanitan]] infobox: Unknown template parameter: forme2=Stato Zen
 [[Darmanitan]] infobox: In template parameter ntipi: Expected '1', got '3'
 [[Darmanitan]] infobox: Unknown template parameter: tipo3=Psico
+
+* Giratina's forms
+[[Giratina]] infobox: Unknown template parameter: forme=2
+[[Giratina]] infobox: Unknown template parameter: forme1=Forma Alterata
+[[Giratina]] infobox: Unknown template parameter: forme2=Forma Origine
+[[Giratina]] infobox: Unknown template parameter: height-ftin2=22'08"
+[[Giratina]] infobox: Unknown template parameter: height-m2=6.9
+[[Giratina]] infobox: Unknown template parameter: peso-lbs2=1433.0
+[[Giratina]] infobox: Unknown template parameter: peso-kg2=650.0
+
+* Shaymin's forms
+[[Shaymin]] infobox: Unknown template parameter: forme=2
+[[Shaymin]] infobox: Unknown template parameter: forme1=Forma Terra
+[[Shaymin]] infobox: Unknown template parameter: forme2=Forma Cielo
+[[Shaymin]] infobox: In template parameter ntipi: Expected '1', got '3'
+[[Shaymin]] infobox: Unknown template parameter: tipo3=Volante

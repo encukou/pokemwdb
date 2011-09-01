@@ -20,13 +20,10 @@ def group_digits(num):
     while num:
         num, lastpart = num[:-3], num[-3:]
         chunks.append(lastpart)
-    return (','.join(reversed(chunks)), '.'.join(reversed(chunks)))
-
-def eunum(num):
-    return unicode(num).replace('.', ',')
+    return '.'.join(reversed(chunks))
 
 def eufloat(num):
-    return float(unicode(num).replace(',', '.'))
+    return unicode(float(unicode(num).replace(',', '.'))).replace('.', ',')
 
 class PokemonPrevNextHead(TemplateTemplate):
     def _init(self):
@@ -129,22 +126,24 @@ class PokemonInfobox(TemplateTemplate):
 
 
     @param_name('height-ftin')
-    @normalize(lambda s: s.replace('′', "'").replace('″', '"').replace(' ', ''))  # XXX
     def height_ftin(self, v): return '''{0}'{1:02}"'''.format(*divmod(
             int(round(self.species.default_pokemon.height * 3.937)), 12))
 
     @param_name('height-m')
     @normalize(eufloat)  # XXX
-    def height_m(self, v): return self.species.default_pokemon.height / 10.
+    def height_m(self, v): return unicode(
+            self.species.default_pokemon.height / 10.).replace('.', ',')
 
     @param_name('peso-lbs')
     @normalize(eufloat)  # XXX
-    def weight_lbs(self, v): return int(round(
+    def weight_lbs(self, v): return unicode(int(round(
             self.species.default_pokemon.weight * 2.20462262)) / 10.
+            ).replace('.', ',')
 
     @param_name('peso-kg')
     @normalize(eufloat)  # XXX
-    def weight_kg(self, v): return self.species.default_pokemon.weight / 10.
+    def weight_kg(self, v): return unicode(
+            self.species.default_pokemon.weight / 10.).replace('.', ',')
 
 
     @param_name('nabilità')
