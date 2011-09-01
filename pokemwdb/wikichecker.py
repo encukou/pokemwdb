@@ -195,7 +195,7 @@ class ArticleChecker(object):
             yield '[[%s]]: article missing' % (self.article_name)
         else:
             for error in self.check():
-                yield '[[%s]] %s: %s' % (self.article_name, self.name, error)
+                yield '[[%s]] \1%s\2: \3%s\4' % (self.article_name, self.name, error)
         sys.stdout.write(' ' * len(msg) + '\r')
         sys.stdout.flush()
 
@@ -227,7 +227,7 @@ class WikiChecker(object):
             del checkers[:]
             del needed_articles[:]
 
-        for checker, i in itertools.izip(self.checkers(), range(20000)):
+        for checker, i in itertools.izip(self.checkers(), xrange(999999)):
             needs_articles = False
             for article in getattr(checker, 'needed_articles', []):
                 if not self.cache.is_up_to_date(article):
@@ -257,28 +257,38 @@ class WikiChecker(object):
             if b:
                 base_url = self.base_url
             error_file.write(textwrap.dedent('''
-            Checking report for %s
-            Wiki revision %s (%s)
+                Checking report for %s
+                Wiki revision %s (%s)
 
             This report shows:
-            - Errors and ommissions in the checking script
-            - Errors in the database
-            - Errors on the wiki
+            * Errors and ommissions in the checking script
+            * Errors in the database
+            * Errors on the wiki
             It's up to humans to decide which is which.
 
             ''' % (base_url, self.cache.dbinfo.last_revision,
                     self.cache.dbinfo.last_update)))
             ignored = []
             for error in errors:
+                wiki_error = (error
+                        .replace('\1', '<tt>')
+                        .replace('\2', '</tt>')
+                        .replace('\3', '<nowiki>')
+                        .replace('\4', '</nowiki>')
+                    )
+                for c in '\1\2\3\4':
+                    error = error.replace(c, '')
                 if error.strip() in expected:
                     ignored.append(error)
                 else:
-                    error_file.write(error.encode('utf-8'))
+                    error_file.write('* ')
+                    error_file.write(wiki_error.encode('utf-8'))
                     error_file.write('\n')
-            error_file.write('%s mismatches found\n' %
+            error_file.write('\n')
+            error_file.write('    %s mismatches found\n' %
                     (len(errors) - len(ignored)))
             if ignored:
-                error_file.write('%s expected mismatches ignored\n' %
+                error_file.write('    %s expected mismatches ignored\n' %
                         len(ignored))
 
         print '%s mismatches written to file' % (len(errors) - len(ignored))
