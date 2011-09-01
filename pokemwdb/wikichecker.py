@@ -170,8 +170,12 @@ class ArticleChecker(object):
         try:
             return self._article
         except AttributeError:
-            self._article = wikiparse.wikiparse(
-                    self.checker.cache[self.article_name])
+            try:
+                article = self.checker.cache[self.article_name]
+            except KeyError:
+                self._article = None
+            else:
+                self._article = wikiparse.wikiparse(article)
             return self._article
 
     def error(self, err):
@@ -187,8 +191,11 @@ class ArticleChecker(object):
         msg = '[[%s]]...\r' % self.article_name
         sys.stdout.write(msg + '\r')
         sys.stdout.flush()
-        for error in self.check():
-            yield '[[%s]] %s: %s' % (self.article_name, self.name, error)
+        if self.article is None:
+            yield '[[%s]]: article missing' % (self.article_name)
+        else:
+            for error in self.check():
+                yield '[[%s]] %s: %s' % (self.article_name, self.name, error)
         sys.stdout.write(' ' * len(msg) + '\r')
         sys.stdout.flush()
 
