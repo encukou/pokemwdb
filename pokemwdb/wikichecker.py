@@ -269,7 +269,7 @@ class WikiChecker(object):
             ''' % (base_url, self.cache.dbinfo.last_revision,
                     self.cache.dbinfo.last_update)))
             ignored = []
-            for error in errors:
+            for error in sorted(errors):
                 wiki_error = (error
                         .replace('\1', '<tt>')
                         .replace('\2', '</tt>')
