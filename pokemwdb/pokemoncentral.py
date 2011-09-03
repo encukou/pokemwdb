@@ -274,60 +274,66 @@ class MoveInfobox(TemplateTemplate):
 
     desc = ignored()
 
-    def _changelog(attrname):
+    def _changelog(func, attrname=None):
         gens = '0 prima seconda terza quarta quinta'.split()
-        def wrapper(func):
-            def get(self, v):
-                history = dict((c.changed_in, getattr(c, attrname)) for
-                        c in self.move.changelog)
-                low = high = self.move.generation_id
-                changes = []
-                for vg in list(self.checker.checker.session.query(tables.VersionGroup)) + [None]:
-                    try:
-                        new_value = history[vg]
-                    except KeyError:
-                        new_value = None
-                    if new_value is None:
-                        pass
+        param_name(func.__name__ + 'notes')
+        attrname = attrname or func.__name__
+        def wrapper(self, v):
+            history = dict((c.changed_in, getattr(c, attrname)) for
+                    c in self.move.changelog)
+            low = high = self.move.generation_id
+            changes = []
+            for vg in list(self.checker.checker.session.query(tables.VersionGroup)) + [None]:
+                try:
+                    new_value = history[vg]
+                except KeyError:
+                    new_value = None
+                if new_value is None:
+                    pass
+                else:
+                    if low == high:
+                        geninfo = gens[high]
                     else:
-                        if low == high:
-                            geninfo = gens[high]
-                        else:
-                            geninfo = '%s alla %s' % (gens[low], gens[high])
-                        value = func(new_value)
-                        if isinstance(value, tuple):
-                            value = value[0]
-                        low = vg.generation_id
-                        changes.append('%s dalla %s generazione' % (value, geninfo))
-                    if vg:
-                        high = vg.generation_id
-                value = func(getattr(self.move, attrname))
-                if changes:
+                        geninfo = '%s alla %s' % (gens[low], gens[high])
+                    value = func(None, None, new_value)
                     if isinstance(value, tuple):
                         value = value[0]
-                    return '{{tt | %s | %s}}' % (value, ', '.join(changes))
-                else:
-                    return value
-            return get
+                    low = vg.generation_id
+                    changes.append('%s dalla %s generazione' % (value, geninfo))
+                if vg:
+                    high = vg.generation_id
+            if changes:
+                return ', '.join(changes)
+            else:
+                return None
         return wrapper
 
-    @_changelog('pp')
-    def basepp(pp): return pp or mdash
+    def basepp(self, v, _pp=None):
+        if _pp is None:
+            _pp = self.move.pp
+        return _pp or mdash
+    ppnotes = _changelog(basepp, attrname='pp')
+
     #def maxpp(self, v): return self.move.pp * 8 // 5 if self.move.pp else mdash
+    maxppnotes = _changelog(lambda s, v, pp: pp * 8 // 5, attrname='pp')
 
-    @_changelog('accuracy')
-    def accuracy(accuracy):
-        if accuracy in (0, 100, None):
-            return (accuracy, ) + mdash
+    def accuracy(self, v, _accuracy=None):
+        if _accuracy is None:
+            _accuracy = self.move.accuracy
+        if _accuracy in (0, 100, None):
+            return (_accuracy, ) + mdash
         else:
-            return accuracy
+            return _accuracy
+    accuracynotes = _changelog(accuracy)
 
-    @_changelog('power')
-    def power(power):
-        if power == 1:
+    def power(self, v, _power=None):
+        if _power is None:
+            _power = self.move.power
+        if _power == 1:
             return mdash + ('Variabile', )
         else:
-            return power or mdash
+            return _power or mdash
+    powernotes = _changelog(power)
 
     def priority(self, v):
         if not self.move.priority:
@@ -389,6 +395,7 @@ class MoveInfobox(TemplateTemplate):
     sleep = ignored()
     confusion = ignored()
     flinch = ignored()
+    poison = ignored()
 
     def _machine(gen, hm=False):
         def tm(self, v):
@@ -449,7 +456,8 @@ class MoveInfobox(TemplateTemplate):
 
     def target(self, v):
         return {
-                'all-opponents': 'all',
+                'all-opponents':
+                        'foe' if 'distance' in self.flags else 'adjacentfoes',
                 'user': 'self',
                 'selected-pokemon':
                         'any' if 'distance' in self.flags else 'anyadjacent',
@@ -536,9 +544,10 @@ class PCChecker(WikiChecker):
         for species in self.session.query(tables.PokemonSpecies):
             yield CheckPokemonNavigation(self, species)
             yield CheckPokemonInfobox(self, species)
-        for move in self.session.query(tables.Move):
             pass
+        for move in self.session.query(tables.Move):
             yield CheckMoveInfobox(self, move)
+            pass
 
 if __name__ == '__main__':
     PCChecker().check()

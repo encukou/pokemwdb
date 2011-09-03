@@ -446,7 +446,8 @@ class MoveInfobox(TemplateTemplate):
 
     def target(self, v):
         return {
-                'all-opponents': 'all',
+                'all-opponents':
+                        'foe' if 'distance' in self.flags else 'adjacentfoes',
                 'user': 'self',
                 'selected-pokemon':
                         'any' if 'distance' in self.flags else 'anyadjacent',
