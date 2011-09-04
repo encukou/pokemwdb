@@ -319,7 +319,7 @@ class WikiChecker(object):
             ignored = []
             for error in sorted(errors, key=lambda e: (e.checker_number, e.args)):
                 str_formatted = error.str_format()
-                if str_formatted in expected:
+                if str_formatted.replace('\n', r'\n') in expected:
                     ignored.append(str_formatted)
                 else:
                     error_file.write('* ')
