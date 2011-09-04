@@ -519,11 +519,11 @@ class BulbapediaChecker(WikiChecker):
         self.session = connect()
 
     def checkers(self):
-        for species in self.session.query(tables.PokemonSpecies):
+        for species in self.session.query(tables.PokemonSpecies).order_by(tables.PokemonSpecies.id):
             pass
             yield CheckPokemonNavigation(self, species)
             yield CheckPokemonInfobox(self, species)
-        for move in self.session.query(tables.Move):
+        for move in self.session.query(tables.Move).join(tables.Move.names_local).order_by(tables.Move.names_table.name):
             pass
             yield CheckMoveInfobox(self, move)
 
