@@ -8,7 +8,8 @@ import re
 
 from pokemwdb.wikicache import WikiCache
 from pokemwdb.wikichecker import (WikiChecker, ArticleChecker,
-        TemplateTemplate, normalize, missing_on, param_name, ignored, checker)
+        TemplateTemplate, normalize, missing_on, param_name, ignored, checker,
+        WrongTemplateParameter)
 from pokemwdb import wikiparse
 
 def _coleot(value):
@@ -69,8 +70,7 @@ class PokemonInfobox(TemplateTemplate):
         except KeyError:
             return
         if val != expected:
-            yield 'Japanese TM name mismatch: expected %s, got %s' % (expected,
-                    val)
+            yield WrongTemplateParameter('romaji', expected, val)
 
 
     size = ignored()
@@ -487,12 +487,12 @@ class PokemonChecker(ArticleChecker):
         self.species = species
 
 class CheckPokemonNavigation(PokemonChecker):
-    name = 'prev/next navigation'
+    name = 'prev/next navi'
 
     def check(self):
         for i, template in enumerate(self.find_template('PokémonPrecedenteSuccessivo', find_all=True)):
             for error in PokemonPrevNextHead(self, template, species=self.species).check():
-                yield '[%s] %s' % ('header footer'.split()[i], error)
+                yield error
 
 class CheckPokemonInfobox(PokemonChecker):
     name = 'infobox'

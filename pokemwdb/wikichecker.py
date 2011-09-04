@@ -7,6 +7,7 @@ import os
 import sys
 import textwrap
 import itertools
+import re
 
 from pokemwdb.wikicache import WikiCache
 from pokemwdb import wikiparse
@@ -14,6 +15,50 @@ from pokemwdb import wikiparse
 def find_template(article, name, *args, **kwargs):
     return wikiparse.find(article, wikiparse.Template,
                     lambda t: t.string_name == name, *args, **kwargs)
+
+safe_re = re.compile("^[\w\s'#]*$")
+
+class Error(object):
+    def __init__(self, *args, **kwargs):
+        assert len(self.argnames) == len(args)
+        self.args = []
+        for i, arg in enumerate(args):
+            if not safe_re.match(arg):
+                arg = '<nowiki>%s</nowiki>' % arg
+            if '=' in arg:
+                arg = '%s=%s' % (i + 1, arg)
+            self.args.append(arg)
+        self.type = type
+        self.pagename = kwargs.pop('pagename', '')
+        self.contexts = kwargs.pop('pagename', [])
+
+    def str_format(self):
+        return (
+                '{{User:En-Cu-Kou/T|' + self.template_name +
+                '| %s | %s | ' % (self.pagename, ' '.join(self.contexts)) +
+                ' | '.join(self.args) +
+                ' }}'
+            )
+
+class WrongTemplateParameter(Error):
+    argnames = 'arg right wrong'.split()
+    template_name = 'diff'
+
+class ExtraTemplateParameter(Error):
+    argnames = 'arg value'.split()
+    template_name = 'extr'
+
+class MissingTemplateParameter(Error):
+    argnames = 'arg value'.split()
+    template_name = 'miss'
+
+class DuplicateTemplateParameter(Error):
+    argnames = 'arg value'.split()
+    template_name = 'dupl'
+
+class MissingArticle(Error):
+    argnames = []
+    template_name = 'nopage'
 
 class _TTMeta(type):
     def __new__(cls, name, bases, attrs):
@@ -63,7 +108,7 @@ class TemplateTemplate(object):
             try:
                 m_param = self.params[param_name]
             except KeyError:
-                errors.append('Unknown template parameter: %s=%s' % (
+                errors.append(ExtraTemplateParameter(
                         param_name, unicode(t_param.value).strip()))
             else:
                 param_value = unicode(t_param.value).strip()
@@ -71,8 +116,7 @@ class TemplateTemplate(object):
                 try:
                     unused_params.remove(param_name)
                 except KeyError:
-                    errors.append('Duplicate template parameter: %s' %
-                            (param_name))
+                    errors.append(DuplicateTemplateParameter(param_name, param_value))
         for param in unused_params:
             errors.extend(self._check_param(self.params[param], None))
         return errors
@@ -97,8 +141,7 @@ class TemplateTemplate(object):
             try:
                 t_value = normalizer(t_value)
             except Exception:
-                msg = "Bad value for template parameter %s: %s (should be %s)"
-                yield msg % (m_param.name, expected_shown, t_value)
+                yield WrongTemplateParameter(m_param.name, expected_shown, t_value)
                 return
 
             if isinstance(expected, tuple):
@@ -111,14 +154,11 @@ class TemplateTemplate(object):
 
             if not match:
                 if expected is None:
-                    yield "Unexpected template parameter: %s=%s" % (
-                                m_param.name, t_value)
+                    yield ExtraTemplateParameter(m_param.name, t_value)
                 elif t_value is None:
-                    msg = "Missing template parameter: %s (should be %s)"
-                    yield msg % (m_param.name, expected_shown)
+                    yield MissingTemplateParameter(m_param.name, expected_shown)
                 else:
-                    msg = "In template parameter %s: Expected '%s', got '%s'"
-                    yield msg % (m_param.name, expected_shown, t_value)
+                    yield WrongTemplateParameter(m_param.name, expected_shown, t_value)
 
     def dbget_id(self, table, id):
         return self.checker.checker.session.query(table).get(id)
@@ -178,10 +218,6 @@ class ArticleChecker(object):
                 self._article = wikiparse.wikiparse(article)
             return self._article
 
-    def error(self, err):
-        self.checker.error('[[%s]] %s: %s' % (self.article_name,
-                self.name, err))
-
     def find_template(self, name, section=None, *args, **kwargs):
         if not section:
             section = self.article
@@ -191,11 +227,18 @@ class ArticleChecker(object):
         msg = '[[%s]]...\r' % self.article_name
         sys.stdout.write(msg + '\r')
         sys.stdout.flush()
+        def make_mine(error):
+            error.pagename = self.article_name
+            error.contexts.append(self.name)
         if self.article is None:
-            yield '[[%s]]: article missing' % (self.article_name)
+            error = MissingArticle(self.article_name)
+            print error
+            make_mine(error)
+            yield error
         else:
             for error in self.check():
-                yield '[[%s]] \1%s\2: \3%s\4' % (self.article_name, self.name, error)
+                make_mine(error)
+                yield error
         sys.stdout.write(' ' * len(msg) + '\r')
         sys.stdout.flush()
 
@@ -212,18 +255,19 @@ class WikiChecker(object):
         needed_articles = []
         needed_articles_set = set()
 
-        def _run_one(checker):
+        def _run_one(checker, number):
             new_errors = list(checker())
             for error in new_errors:
-                print error
+                error.checker_number = number
+                print error.str_format()
             errors.extend(new_errors)
 
         def _run():
             print 'Running %s checkers with %s needed articles' % (
                     len(checkers), len(needed_articles))
             self.cache.fetch_pages(needed_articles)
-            for checker in checkers:
-                _run_one(checker)
+            for checker, number in checkers:
+                _run_one(checker, number)
             del checkers[:]
             del needed_articles[:]
 
@@ -236,9 +280,9 @@ class WikiChecker(object):
                         needed_articles_set.add(article)
                         needed_articles.append(article)
             if needs_articles:
-                checkers.append(checker)
+                checkers.append((checker, i))
             else:
-                _run_one(checker)
+                _run_one(checker, i)
             if len(needed_articles) >= 20 or len(checkers) > 50:
                 _run()
         _run()
@@ -257,38 +301,35 @@ class WikiChecker(object):
             if b:
                 base_url = self.base_url
             error_file.write(textwrap.dedent('''
-                Checking report for %s
-                Wiki revision %s (%s)
+            {{User:En-Cu-Kou/T|head|||
+
+                | site = %s
+                | wiki revision = %s (%s)
+                |
 
             This report shows:
             * Errors and ommissions in the checking script
             * Errors in the database
             * Errors on the wiki
             It's up to humans to decide which is which.
+            }}
 
             ''' % (base_url, self.cache.dbinfo.last_revision,
                     self.cache.dbinfo.last_update)))
             ignored = []
-            for error in sorted(errors):
-                wiki_error = (error
-                        .replace('\1', '<tt>')
-                        .replace('\2', '</tt>')
-                        .replace('\3', '<nowiki>')
-                        .replace('\4', '</nowiki>')
-                    )
-                for c in '\1\2\3\4':
-                    error = error.replace(c, '')
-                if error.strip() in expected:
-                    ignored.append(error)
+            for error in sorted(errors, key=lambda e: (e.checker_number, e.args)):
+                str_formatted = error.str_format()
+                if str_formatted in expected:
+                    ignored.append(str_formatted)
                 else:
                     error_file.write('* ')
-                    error_file.write(wiki_error.encode('utf-8'))
+                    error_file.write(str_formatted.encode('utf-8'))
                     error_file.write('\n')
             error_file.write('\n')
-            error_file.write('    %s mismatches found\n' %
+            error_file.write('{{User:En-Cu-Kou/T|total||| num = %s }}\n' %
                     (len(errors) - len(ignored)))
             if ignored:
-                error_file.write('    %s expected mismatches ignored\n' %
+                error_file.write('{{User:En-Cu-Kou/T|ignored||| num = %s }}\n' %
                         len(ignored))
 
         print '%s mismatches written to file' % (len(errors) - len(ignored))

@@ -1,95 +1,80 @@
+{{User:En-Cu-Kou/T|extr| Misdreavus | infobox | evsa | <nowiki>1{{tt | * | Solo Gen II e III}}</nowiki> }}
 
-* Rotom's forms
-[[Rotom]] prev/next navigation: [header] In template parameter tipo2: Expected 'Spettro', got '{{#switch: {{#time: w | }} | 0 | 6=Spettro | 1=Fuoco | 2=Acqua | 3=Ghiaccio | 4=Volante | 5=Erba}}'
-[[Rotom]] prev/next navigation: [footer] In template parameter tipo2: Expected 'Spettro', got '{{#switch: {{#time: w | }} | 0 | 6=Spettro | 1=Fuoco | 2=Acqua | 3=Ghiaccio | 4=Volante | 5=Erba}}'
+{{User:En-Cu-Kou/T|diff| Ambipom | infobox | jdex | 124 | <nowiki>124{{tt | * | Non disponibile nella seconda generazione}}</nowiki> }}
+{{User:En-Cu-Kou/T|diff| Lickilicky | infobox | jdex | 181 | <nowiki>181{{tt | * | Non presente nella seconda generazione}}</nowiki> }}
+{{User:En-Cu-Kou/T|diff| Tangrowth | infobox | jdex | 183 | <nowiki>183{{tt | * | Non presente nella seconda generazione}}</nowiki> }}
+{{User:En-Cu-Kou/T|diff| Yanmega | infobox | jdex | 102 | <nowiki>102{{tt | * | Quarta generazione}}</nowiki> }}
+{{User:En-Cu-Kou/T|diff| Mamoswine | infobox | jdex | 197 | <nowiki>197{{tt | * | Non presente nella seconda generazione}}</nowiki> }}
 
+{{User:En-Cu-Kou/T|diff| Deoxys | infobox | evat | 1 | 3=<nowiki>{{#switch: {{#time: w | }} | 0 | 6={{tt | 0 | 1 nella Forma Normale, 2 nella Forma Attacco, e 0 nella Forma Difesa.}} | 1 | 5={{tt | 0 | 1 nella Forma Normale, 2 nella Forma Attacco, e 0 nella Forma Velocità.}} | 2 | 4={{tt | 2 | 1 nella Forma Normale, 0 nella Forma Difesa, 0 e nella Forma Velocità.}} | 3={{tt | 1 | 2 nella Forma Attacco, 0 nella Forma Difesa, e 0 nella Forma Velocità.}}}}</nowiki> }}
+{{User:En-Cu-Kou/T|extr| Deoxys | infobox | evde | 2=<nowiki>{{#switch: {{#time: w | }} | 0 | 6={{tt | 0 | 0 nella Forma Normale, 0 nella Forma Attacco, e 2 nella Forma Difesa.}} | 2 | 4={{tt | 0 | 0 nella Forma Normale, 2 nella Forma Difesa, 0 nella Forma Velocità.}} | 3={{tt | 0 | 0 nella Forma Attacco, 2 nella Forma Difesa, e 0 nella Forma Velocità.}} | 1 | 5={{tt | 2 | 0 nella Forma Normale, 0 nella Forma Attacco, e 0 nella Forma Velocità.}}}}</nowiki> }}
+{{User:En-Cu-Kou/T|extr| Deoxys | infobox | evhp | 2=<nowiki>{{#switch: {{#time: w | }} | 0 | 6={{tt | 0 | 0 nella Forma Normale, 0 nella Forma Attacco, e 0 nella Forma Difesa.}} | 1 | 5={{tt | 0 | 0 nella Forma Normale, 0 nella Forma Attacco, e 0 nella Forma Velocità.}} | 2 | 4={{tt | 0 | 0 nella Forma Normale, 0 nella Forma Difesa e 0 nella Forma Velocità.}} | 3={{tt | 1 | 0 nella Forma Attacco, 0 nella Forma Difesa, e 0 nella Forma Velocità.}}}}</nowiki> }}
+{{User:En-Cu-Kou/T|diff| Deoxys | infobox | evsa | 1 | 3=<nowiki>{{#switch: {{#time: w | }} | 0 | 6={{tt | 0 | 1 nella Forma Normale, 1 nella Forma Attacco, e 0 nella Forma Difesa.}} | 1 | 5={{tt | 0 | 1 nella Forma Normale, 1 nella Forma Attacco, e 0 nella Forma Velocità.}} | 2 | 4={{tt | 1 |  1 nella Forma Normale, 0 nella Forma Difesa, e 0 nella Forma Velocità.}} | 3={{tt | 1 |  1 nella Forma Attacco, 0 nella Forma Difesa, e 0 nella Forma Velocità.}}}}</nowiki> }}
+{{User:En-Cu-Kou/T|extr| Deoxys | infobox | evsd | 2=<nowiki>{{#switch: {{#time: w | }} | 0 | 6={{tt | 0 | 0 nella Forma Normale, 0 nella Forma Attacco, e 1 nella Forma Difesa.}} | 2 | 4={{tt | 0 | 0 nella Forma Normale, 1 nella Forma Difesa, e 0 nella Forma Velocità.}} | 3={{tt | 0 | 0 nella Forma Attacco, 1 nella Forma Difesa, e 0 nella Forma Velocità.}} | 1 | 5={{tt | 1 | 0 nella Forma Normale, 0 nella Forma Attacco, e 0 nella Forma Velocità.}}}}</nowiki> }}
+{{User:En-Cu-Kou/T|diff| Deoxys | infobox | evsp | 1 | 3=<nowiki>{{#switch: {{#time: w | }} | 0 | 6={{tt | 3 | 1 nella Forma Normale, 0 nella Forma Attacco, e 0 nella Forma Difesa.}} | 1 | 5={{tt | 0 | 1 nella Forma Normale, 0 nella Forma Attacco, e 3 nella Forma Velocità.}} | 2 | 4={{tt | 0 | 1 nella Forma Normale, 0 nella Forma Difesa, e 3 nella Forma Velocità.}} | 3={{tt | 1 | 0 nella Forma Attacco, 0 nella Forma Difesa, e 3 nella Forma Velocità.}}}}</nowiki> }}
 
-* Misdreavus EXP note
-[[Misdreavus]] infobox: Unexpected template parameter: evsa=1{{tt | * | Solo Gen II e III}}
+{{User:En-Cu-Kou/T|extr| Wormadam | infobox | evat | 0 }}
+{{User:En-Cu-Kou/T|extr| Wormadam | infobox | evde | 2=<nowiki>{{#switch: {{#expr: {{#time: z | }} mod 3 | }} | 0={{tt | 0 | 2 nel Manto Sabbia e 1 nel Manto Scarti.}} | 1={{tt | 2 | 0 nel Manto Pianta e 1 nel Manto Scarti.}} | 2={{tt | 1 | 0 nel Manto Pianta e 2 nel Manto Sabbia.}}}}</nowiki> }}
+{{User:En-Cu-Kou/T|extr| Wormadam | infobox | evhp | 0 }}
+{{User:En-Cu-Kou/T|extr| Wormadam | infobox | evsa | 0 }}
+{{User:En-Cu-Kou/T|diff| Wormadam | infobox | evsd | 2 | 3=<nowiki>{{#switch: {{#expr: {{#time: z | }} mod 3 | }} | 0={{tt | 2 | 0 nel Manto Sabbia e 1 nel Manto Scarti.}} | 1={{tt | 0 | 2 nel Manto Pianta e 1 nel Manto Scarti.}} | 2={{tt | 1 | 2 nel Manto Pianta e 0 nel Manto Sabbia.}}}}</nowiki> }}
+{{User:En-Cu-Kou/T|extr| Wormadam | infobox | evsp | 0 }}
+{{User:En-Cu-Kou/T|extr| Wormadam | infobox | forme | 3 }}
+{{User:En-Cu-Kou/T|extr| Wormadam | infobox | forme1 | Manto Sabbia }}
+{{User:En-Cu-Kou/T|extr| Wormadam | infobox | forme2 | Manto Pianta }}
+{{User:En-Cu-Kou/T|extr| Wormadam | infobox | forme3 | Manto Scarti }}
+{{User:En-Cu-Kou/T|diff| Wormadam | infobox | ntipi | 2 | 4 }}
+{{User:En-Cu-Kou/T|extr| Wormadam | infobox | tipo3 | Terra }}
+{{User:En-Cu-Kou/T|extr| Wormadam | infobox | tipo4 | Acciaio }}
 
-* Meloetta's forms
-[[Meloetta]] prev/next navigation: [header] In template parameter tipo2: Expected 'Psico', got '{{#switch: {{#expr: {{#time: i | }} mod 2 | }} | 0=psico | 1=lotta}}'
-[[Meloetta]] prev/next navigation: [footer] In template parameter tipo2: Expected 'Psico', got '{{#switch: {{#expr: {{#time: i | }} mod 2 | }} | 0=psico | 1=lotta}}'
+{{User:En-Cu-Kou/T|diff| Rotom | prev/next navi | tipo2 | Spettro | 3=<nowiki>{{#switch: {{#time: w | }} | 0 | 6=Spettro | 1=Fuoco | 2=Acqua | 3=Ghiaccio | 4=Volante | 5=Erba}}</nowiki> }}
+{{User:En-Cu-Kou/T|diff| Rotom | prev/next navi | tipo2 | Spettro | 3=<nowiki>{{#switch: {{#time: w | }} | 0 | 6=Spettro | 1=Fuoco | 2=Acqua | 3=Ghiaccio | 4=Volante | 5=Erba}}</nowiki> }}
+{{User:En-Cu-Kou/T|extr| Rotom | infobox | forme | 6 }}
+{{User:En-Cu-Kou/T|extr| Rotom | infobox | forme1 | Rotom Normale }}
+{{User:En-Cu-Kou/T|extr| Rotom | infobox | forme2 | Rotom Calore }}
+{{User:En-Cu-Kou/T|extr| Rotom | infobox | forme3 | Rotom Lavaggio }}
+{{User:En-Cu-Kou/T|extr| Rotom | infobox | forme4 | Rotom Gelo }}
+{{User:En-Cu-Kou/T|extr| Rotom | infobox | forme5 | Rotom Vortice }}
+{{User:En-Cu-Kou/T|extr| Rotom | infobox | forme6 | Rotom Taglio }}
+{{User:En-Cu-Kou/T|diff| Rotom | infobox | ntipi | 2 | 7 }}
+{{User:En-Cu-Kou/T|extr| Rotom | infobox | tipo3 | Fuoco }}
+{{User:En-Cu-Kou/T|extr| Rotom | infobox | tipo4 | Acqua }}
+{{User:En-Cu-Kou/T|extr| Rotom | infobox | tipo5 | Ghiaccio }}
+{{User:En-Cu-Kou/T|extr| Rotom | infobox | tipo6 | Volante }}
+{{User:En-Cu-Kou/T|extr| Rotom | infobox | tipo7 | Erba }}
 
-* Deoxys' forms
-[[Deoxys]] infobox: Unexpected template parameter: evhp={{#switch: {{#time: w | }} | 0 | 6={{tt | 0 | 0 nella Forma Normale, 0 nella Forma Attacco, e 0 nella Forma Difesa.}} | 1 | 5={{tt | 0 | 0 nella Forma Normale, 0 nella Forma Attacco, e 0 nella Forma Velocità.}} | 2 | 4={{tt | 0 | 0 nella Forma Normale, 0 nella Forma Difesa e 0 nella Forma Velocità.}} | 3={{tt | 1 | 0 nella Forma Attacco, 0 nella Forma Difesa, e 0 nella Forma Velocità.}}}}
-[[Deoxys]] infobox: In template parameter evat: Expected '1', got '{{#switch: {{#time: w | }} | 0 | 6={{tt | 0 | 1 nella Forma Normale, 2 nella Forma Attacco, e 0 nella Forma Difesa.}} | 1 | 5={{tt | 0 | 1 nella Forma Normale, 2 nella Forma Attacco, e 0 nella Forma Velocità.}} | 2 | 4={{tt | 2 | 1 nella Forma Normale, 0 nella Forma Difesa, 0 e nella Forma Velocità.}} | 3={{tt | 1 | 2 nella Forma Attacco, 0 nella Forma Difesa, e 0 nella Forma Velocità.}}}}'
-[[Deoxys]] infobox: Unexpected template parameter: evde={{#switch: {{#time: w | }} | 0 | 6={{tt | 0 | 0 nella Forma Normale, 0 nella Forma Attacco, e 2 nella Forma Difesa.}} | 2 | 4={{tt | 0 | 0 nella Forma Normale, 2 nella Forma Difesa, 0 nella Forma Velocità.}} | 3={{tt | 0 | 0 nella Forma Attacco, 2 nella Forma Difesa, e 0 nella Forma Velocità.}} | 1 | 5={{tt | 2 | 0 nella Forma Normale, 0 nella Forma Attacco, e 0 nella Forma Velocità.}}}}
-[[Deoxys]] infobox: In template parameter evsa: Expected '1', got '{{#switch: {{#time: w | }} | 0 | 6={{tt | 0 | 1 nella Forma Normale, 1 nella Forma Attacco, e 0 nella Forma Difesa.}} | 1 | 5={{tt | 0 | 1 nella Forma Normale, 1 nella Forma Attacco, e 0 nella Forma Velocità.}} | 2 | 4={{tt | 1 |  1 nella Forma Normale, 0 nella Forma Difesa, e 0 nella Forma Velocità.}} | 3={{tt | 1 |  1 nella Forma Attacco, 0 nella Forma Difesa, e 0 nella Forma Velocità.}}}}'
-[[Deoxys]] infobox: Unexpected template parameter: evsd={{#switch: {{#time: w | }} | 0 | 6={{tt | 0 | 0 nella Forma Normale, 0 nella Forma Attacco, e 1 nella Forma Difesa.}} | 2 | 4={{tt | 0 | 0 nella Forma Normale, 1 nella Forma Difesa, e 0 nella Forma Velocità.}} | 3={{tt | 0 | 0 nella Forma Attacco, 1 nella Forma Difesa, e 0 nella Forma Velocità.}} | 1 | 5={{tt | 1 | 0 nella Forma Normale, 0 nella Forma Attacco, e 0 nella Forma Velocità.}}}}
-[[Deoxys]] infobox: In template parameter evsp: Expected '1', got '{{#switch: {{#time: w | }} | 0 | 6={{tt | 3 | 1 nella Forma Normale, 0 nella Forma Attacco, e 0 nella Forma Difesa.}} | 1 | 5={{tt | 0 | 1 nella Forma Normale, 0 nella Forma Attacco, e 3 nella Forma Velocità.}} | 2 | 4={{tt | 0 | 1 nella Forma Normale, 0 nella Forma Difesa, e 3 nella Forma Velocità.}} | 3={{tt | 1 | 0 nella Forma Attacco, 0 nella Forma Difesa, e 3 nella Forma Velocità.}}}}'
+{{User:En-Cu-Kou/T|miss| Giratina | infobox | <nowiki>abilitàd</nowiki> | Telepatia }}
+{{User:En-Cu-Kou/T|extr| Giratina | infobox | <nowiki>height-ftin2</nowiki> | <nowiki>22'08"</nowiki> }}
+{{User:En-Cu-Kou/T|extr| Giratina | infobox | <nowiki>height-m2</nowiki> | <nowiki>6.9</nowiki> }}
+{{User:En-Cu-Kou/T|diff| Giratina | infobox | <nowiki>nabilità</nowiki> | 1 | alt }}
+{{User:En-Cu-Kou/T|extr| Giratina | infobox | <nowiki>peso-kg2</nowiki> | <nowiki>650.0</nowiki> }}
+{{User:En-Cu-Kou/T|extr| Giratina | infobox | <nowiki>peso-lbs2</nowiki> | <nowiki>1433.0</nowiki> }}
+{{User:En-Cu-Kou/T|extr| Giratina | infobox | ability2 | Levitazione }}
+{{User:En-Cu-Kou/T|extr| Giratina | infobox | forme | 2 }}
+{{User:En-Cu-Kou/T|extr| Giratina | infobox | forme1 | Forma Alterata }}
+{{User:En-Cu-Kou/T|extr| Giratina | infobox | forme2 | Forma Origine }}
 
-* Wormadam's forms
-[[Wormadam]] infobox: In template parameter ntipi: Expected '2', got '4'
-[[Wormadam]] infobox: Unknown template parameter: tipo3=Terra
-[[Wormadam]] infobox: Unknown template parameter: tipo4=Acciaio
-[[Wormadam]] infobox: Unknown template parameter: forme=3
-[[Wormadam]] infobox: Unknown template parameter: forme2=Manto Pianta
-[[Wormadam]] infobox: Unknown template parameter: forme1=Manto Sabbia
-[[Wormadam]] infobox: Unknown template parameter: forme3=Manto Scarti
-[[Wormadam]] infobox: Unexpected template parameter: evhp=0
-[[Wormadam]] infobox: Unexpected template parameter: evat=0
-[[Wormadam]] infobox: Unexpected template parameter: evde={{#switch: {{#expr: {{#time: z | }} mod 3 | }} | 0={{tt | 0 | 2 nel Manto Sabbia e 1 nel Manto Scarti.}} | 1={{tt | 2 | 0 nel Manto Pianta e 1 nel Manto Scarti.}} | 2={{tt | 1 | 0 nel Manto Pianta e 2 nel Manto Sabbia.}}}}
-[[Wormadam]] infobox: Unexpected template parameter: evsa=0
-[[Wormadam]] infobox: In template parameter evsd: Expected '2', got '{{#switch: {{#expr: {{#time: z | }} mod 3 | }} | 0={{tt | 2 | 0 nel Manto Sabbia e 1 nel Manto Scarti.}} | 1={{tt | 0 | 2 nel Manto Pianta e 1 nel Manto Scarti.}} | 2={{tt | 1 | 2 nel Manto Pianta e 0 nel Manto Sabbia.}}}}'
-[[Wormadam]] infobox: Unexpected template parameter: evsp=0
+{{User:En-Cu-Kou/T|extr| Shaymin | infobox | forme | 2 }}
+{{User:En-Cu-Kou/T|extr| Shaymin | infobox | forme1 | Forma Terra }}
+{{User:En-Cu-Kou/T|extr| Shaymin | infobox | forme2 | Forma Cielo }}
+{{User:En-Cu-Kou/T|diff| Shaymin | infobox | ntipi | 1 | 3 }}
+{{User:En-Cu-Kou/T|extr| Shaymin | infobox | tipo3 | Volante }}
 
-* New Johto dex notes
-[[Lickilicky]] infobox: In template parameter jdex: Expected '181', got '181{{tt | * | Non presente nella seconda generazione}}'
-[[Tangrowth]] infobox: In template parameter jdex: Expected '183', got '183{{tt | * | Non presente nella seconda generazione}}'
-[[Yanmega]] infobox: In template parameter jdex: Expected '102', got '102{{tt | * | Quarta generazione}}'
-[[Mamoswine]] infobox: In template parameter jdex: Expected '197', got '197{{tt | * | Non presente nella seconda generazione}}'
-[[Ambipom]] infobox: In template parameter jdex: Expected '124', got '124{{tt | * | Non disponibile nella seconda generazione}}'
+{{User:En-Cu-Kou/T|extr| Darmanitan | infobox | forme | 2 }}
+{{User:En-Cu-Kou/T|extr| Darmanitan | infobox | forme1 | Normale }}
+{{User:En-Cu-Kou/T|extr| Darmanitan | infobox | forme2 | Stato Zen }}
+{{User:En-Cu-Kou/T|diff| Darmanitan | infobox | ntipi | 1 | 3 }}
+{{User:En-Cu-Kou/T|extr| Darmanitan | infobox | tipo3 | Psico }}
 
-* Rotom's forms
-[[Rotom]] infobox: In template parameter ntipi: Expected '2', got '7'
-[[Rotom]] infobox: Unknown template parameter: tipo3=Fuoco
-[[Rotom]] infobox: Unknown template parameter: tipo4=Acqua
-[[Rotom]] infobox: Unknown template parameter: tipo5=Ghiaccio
-[[Rotom]] infobox: Unknown template parameter: tipo6=Volante
-[[Rotom]] infobox: Unknown template parameter: tipo7=Erba
-[[Rotom]] infobox: Unknown template parameter: forme=6
-[[Rotom]] infobox: Unknown template parameter: forme1=Rotom Normale
-[[Rotom]] infobox: Unknown template parameter: forme2=Rotom Calore
-[[Rotom]] infobox: Unknown template parameter: forme3=Rotom Lavaggio
-[[Rotom]] infobox: Unknown template parameter: forme4=Rotom Gelo
-[[Rotom]] infobox: Unknown template parameter: forme5=Rotom Vortice
-[[Rotom]] infobox: Unknown template parameter: forme6=Rotom Taglio
-
-* Meloetta's forms
-[[Meloetta]] infobox: Unknown template parameter: forme=2
-[[Meloetta]] infobox: Unknown template parameter: forme1=Forma Canto
-[[Meloetta]] infobox: Unknown template parameter: forme2=Forma Danza
-[[Meloetta]] infobox: In template parameter ntipi: Expected '2', got '3'
-[[Meloetta]] infobox: Unknown template parameter: tipo3=Lotta
-[[Meloetta]] infobox: In template parameter cicliuovo: Expected '120', got '20'
-[[Meloetta]] infobox: Unexpected template parameter: evat={{#switch: {{#expr: {{#time: i | }} mod 2 | }} | 0={{tt | 0 | 1 nella Forma Danza}} | 1={{tt | 1 | 0 nella Forma Canto}}}}
-[[Meloetta]] infobox: Unexpected template parameter: evde={{#switch: {{#expr: {{#time: i | }} mod 2 | }} | 0={{tt | 0 | 1 nella Forma Danza}} | 1={{tt | 1 | 0 nella Forma Canto}}}}
-[[Meloetta]] infobox: In template parameter evsa: Expected '1', got '{{#switch: {{#expr: {{#time: i | }} mod 2 | }} | 0={{tt | 1 | 0 nella Forma Danza}} | 1={{tt | 0 | 1 nella Forma Canto}}}}'
-[[Meloetta]] infobox: In template parameter evsd: Expected '1', got '{{#switch: {{#expr: {{#time: i | }} mod 2 | }} | 0={{tt | 1 | 0 nella Forma Danza}} | 1={{tt | 0 | 1 nella Forma Canto}}}}'
-[[Meloetta]] infobox: In template parameter tassocattura: Expected '3', got '5'
-[[Meloetta]] infobox: In template parameter body: Expected '12', got 'Sconosciuto'
-[[Meloetta]] infobox: Unknown template parameter: disptype={{#switch: {{#expr: {{#time: i | }} mod 2 | }} | 0=psico | 1=lotta}}
-
-* Darmanitan's forms
-[[Darmanitan]] infobox: Unknown template parameter: forme=2
-[[Darmanitan]] infobox: Unknown template parameter: forme1=Normale
-[[Darmanitan]] infobox: Unknown template parameter: forme2=Stato Zen
-[[Darmanitan]] infobox: In template parameter ntipi: Expected '1', got '3'
-[[Darmanitan]] infobox: Unknown template parameter: tipo3=Psico
-
-* Giratina's forms
-[[Giratina]] infobox: Unknown template parameter: forme=2
-[[Giratina]] infobox: Unknown template parameter: forme1=Forma Alterata
-[[Giratina]] infobox: Unknown template parameter: forme2=Forma Origine
-[[Giratina]] infobox: Unknown template parameter: height-ftin2=22'08"
-[[Giratina]] infobox: Unknown template parameter: height-m2=6.9
-[[Giratina]] infobox: Unknown template parameter: peso-lbs2=1433.0
-[[Giratina]] infobox: Unknown template parameter: peso-kg2=650.0
-
-* Shaymin's forms
-[[Shaymin]] infobox: Unknown template parameter: forme=2
-[[Shaymin]] infobox: Unknown template parameter: forme1=Forma Terra
-[[Shaymin]] infobox: Unknown template parameter: forme2=Forma Cielo
-[[Shaymin]] infobox: In template parameter ntipi: Expected '1', got '3'
-[[Shaymin]] infobox: Unknown template parameter: tipo3=Volante
+{{User:En-Cu-Kou/T|diff| Meloetta | prev/next navi | tipo2 | Psico | 3=<nowiki>{{#switch: {{#expr: {{#time: i | }} mod 2 | }} | 0=psico | 1=lotta}}</nowiki> }}
+{{User:En-Cu-Kou/T|diff| Meloetta | prev/next navi | tipo2 | Psico | 3=<nowiki>{{#switch: {{#expr: {{#time: i | }} mod 2 | }} | 0=psico | 1=lotta}}</nowiki> }}
+{{User:En-Cu-Kou/T|extr| Meloetta | infobox | disptype | 2=<nowiki>{{#switch: {{#expr: {{#time: i | }} mod 2 | }} | 0=psico | 1=lotta}}</nowiki> }}
+{{User:En-Cu-Kou/T|extr| Meloetta | infobox | evat | 2=<nowiki>{{#switch: {{#expr: {{#time: i | }} mod 2 | }} | 0={{tt | 0 | 1 nella Forma Danza}} | 1={{tt | 1 | 0 nella Forma Canto}}}}</nowiki> }}
+{{User:En-Cu-Kou/T|extr| Meloetta | infobox | evde | 2=<nowiki>{{#switch: {{#expr: {{#time: i | }} mod 2 | }} | 0={{tt | 0 | 1 nella Forma Danza}} | 1={{tt | 1 | 0 nella Forma Canto}}}}</nowiki> }}
+{{User:En-Cu-Kou/T|diff| Meloetta | infobox | evsa | 1 | 3=<nowiki>{{#switch: {{#expr: {{#time: i | }} mod 2 | }} | 0={{tt | 1 | 0 nella Forma Danza}} | 1={{tt | 0 | 1 nella Forma Canto}}}}</nowiki> }}
+{{User:En-Cu-Kou/T|diff| Meloetta | infobox | evsd | 1 | 3=<nowiki>{{#switch: {{#expr: {{#time: i | }} mod 2 | }} | 0={{tt | 1 | 0 nella Forma Danza}} | 1={{tt | 0 | 1 nella Forma Canto}}}}</nowiki> }}
+{{User:En-Cu-Kou/T|extr| Meloetta | infobox | forme | 2 }}
+{{User:En-Cu-Kou/T|extr| Meloetta | infobox | forme1 | Forma Canto }}
+{{User:En-Cu-Kou/T|extr| Meloetta | infobox | forme2 | Forma Danza }}
+{{User:En-Cu-Kou/T|diff| Meloetta | infobox | ntipi | 2 | 3 }}
+{{User:En-Cu-Kou/T|extr| Meloetta | infobox | tipo3 | Lotta }}
