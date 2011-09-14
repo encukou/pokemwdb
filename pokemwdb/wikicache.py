@@ -147,7 +147,7 @@ class WikiCache(object):
                     break
         else:
             purged = set()
-            for x in range(500):
+            for x in range(5000):
                 if not changes:
                     cont, changes = get_cont_changes(rclimit=100, **cont)
                 if changes[0]['revid'] == self.dbinfo.last_revision:

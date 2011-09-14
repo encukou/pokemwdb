@@ -434,6 +434,7 @@ class MoveInfobox(TemplateTemplate):
     def mtpt(self, v): return 'yes' if 'platinum' in self.tutors else ('no', None)
     #def mths(self, v): return 'yes' if 'heartgold' in self.tutors else ('no', None)
     mths = ignored()
+    mtxd = ignored()
     def mtbw(self, v): return 'yes' if 'black' in self.tutors else ('no', None)
 
     def na(self, v):
