@@ -51,21 +51,23 @@ class TemplateParameterError(Error):
             argkey = self.args[0][:-5]
         else:
             argkey = self.args[0]
-        return 'tmpl', self.pagename, argkey
+        if argkey in 'maxpp basepp'.split():
+            argkey = 'pp'
+        return 'tmpl', argkey, self.pagename
 
-class WrongTemplateParameter(Error):
+class WrongTemplateParameter(TemplateParameterError):
     argnames = 'arg right wrong'.split()
     template_name = 'diff'
 
-class ExtraTemplateParameter(Error):
+class ExtraTemplateParameter(TemplateParameterError):
     argnames = 'arg value'.split()
     template_name = 'extr'
 
-class MissingTemplateParameter(Error):
+class MissingTemplateParameter(TemplateParameterError):
     argnames = 'arg value'.split()
     template_name = 'miss'
 
-class DuplicateTemplateParameter(Error):
+class DuplicateTemplateParameter(TemplateParameterError):
     argnames = 'arg value'.split()
     template_name = 'dupl'
 

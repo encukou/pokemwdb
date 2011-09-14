@@ -539,12 +539,12 @@ class PCChecker(WikiChecker):
                 tables.Language).filter_by(identifier='it').one().id
 
     def checkers(self):
+        for move in self.session.query(tables.Move).join(tables.Move.names_local).order_by(tables.Move.names_table.name):
+            yield CheckMoveInfobox(self, move)
+            pass
         for species in self.session.query(tables.PokemonSpecies).order_by(tables.PokemonSpecies.id):
             yield CheckPokemonNavigation(self, species)
             yield CheckPokemonInfobox(self, species)
-            pass
-        for move in self.session.query(tables.Move).join(tables.Move.names_local).order_by(tables.Move.names_table.name):
-            yield CheckMoveInfobox(self, move)
             pass
 
 if __name__ == '__main__':
