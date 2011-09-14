@@ -292,14 +292,14 @@ class MoveInfobox(TemplateTemplate):
                     pass
                 else:
                     if low == high:
-                        geninfo = gens[high]
+                        geninfo = 'nella %s' % gens[high]
                     else:
-                        geninfo = '%s alla %s' % (gens[low], gens[high])
+                        geninfo = 'dalla %s alla %s' % (gens[low], gens[high])
                     value = func(None, None, new_value)
                     if isinstance(value, tuple):
                         value = value[0]
                     low = vg.generation_id
-                    changes.append('%s dalla %s generazione' % (value, geninfo))
+                    changes.append('%s %s generazione' % (value, geninfo))
                 if vg:
                     high = vg.generation_id
             if changes:
@@ -360,15 +360,13 @@ class MoveInfobox(TemplateTemplate):
     @missing_on(AttributeError, (None, 0))
     def appeal(self, v):
         if self.move.generation_id <= 3:
-            return self.move.contest_effect.appeal
-        elif self.move.generation_id <= 4:
-            return self.move.super_contest_effect.appeal
+            return self.move.contest_effect.appeal or (None, 0)
 
     @missing_on(AttributeError, (None, 0))
     def jam(self, v): return self.move.contest_effect.jam
 
     @missing_on(AttributeError)
-    def appealsc(self, v): return self.move.super_contest_effect.appeal
+    def appealsc(self, v): return self.move.super_contest_effect.appeal or (None, 0)
 
     def touches(self, v): return self._flag('contact')
     # charge
