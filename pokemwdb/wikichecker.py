@@ -40,6 +40,19 @@ class Error(object):
                 ' }}'
             )
 
+    @property
+    def sort_key(self):
+        return '?', self.pagename
+
+class TemplateParameterError(Error):
+    @property
+    def sort_key(self):
+        if self.args[0].endswith('notes'):
+            argkey = self.args[0][:-5]
+        else:
+            argkey = self.args[0]
+        return 'tmpl', self.pagename, argkey
+
 class WrongTemplateParameter(Error):
     argnames = 'arg right wrong'.split()
     template_name = 'diff'
@@ -317,7 +330,7 @@ class WikiChecker(object):
             ''' % (base_url, self.cache.dbinfo.last_revision,
                     self.cache.dbinfo.last_update)))
             ignored = []
-            for error in sorted(errors, key=lambda e: (e.checker_number, e.args)):
+            for error in sorted(errors, key=lambda e: (e.sort_key, e.checker_number, e.args)):
                 str_formatted = error.str_format()
                 if str_formatted.replace('\n', r'\n') in expected:
                     ignored.append(str_formatted)
