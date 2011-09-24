@@ -259,10 +259,9 @@ class ArticleChecker(object):
 
 class WikiChecker(object):
     base_url = 'http://bulbapedia.bulbagarden.net/w/api.php?'
-    path = 'data/bp'
 
     def __init__(self):
-        self.cache = WikiCache(self.base_url, os.path.join(self.path, 'cache'))
+        self.cache = WikiCache(self.base_url)
 
     def check(self):
         errors = []

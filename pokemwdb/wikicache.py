@@ -1,19 +1,15 @@
-#! /usr/bin/env python
-# Encoding: UTF-8
-
-from __future__ import unicode_literals
-
 import os
-import urllib
-import shutil
-import time
 import datetime
+import urllib
+import time
+import collections
+import functools
 
 from sqlalchemy.ext.declarative import declarative_base, DeclarativeMeta
 from sqlalchemy import Column, ForeignKey, MetaData, PrimaryKeyConstraint, Table, UniqueConstraint
-from sqlalchemy.types import Unicode, Integer, Boolean, DateTime
+from sqlalchemy.types import Unicode, Integer, Boolean, DateTime, PickleType
 from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import sessionmaker, relationship
 import sqlalchemy.exc
 
 try:
@@ -25,261 +21,373 @@ import yaml
 metadata = MetaData()
 TableBase = declarative_base(metadata=metadata)
 
-class Article(TableBase):
-    __tablename__ = 'article'
-    name = Column(Unicode, primary_key=True, nullable=False)
-    contents = Column(Unicode, nullable=True)
-    revision = Column(Integer, nullable=False)
-    up_to_date = Column(Boolean, nullable=False)
+class Wiki(TableBase):
+    __tablename__ = 'wikis'
+    url_base = Column(Unicode, nullable=False, primary_key=True, info=dict(
+        doc="MediaWiki API URL base, including the '?', e.g. 'http://en.wikipedia.org/w/api.php?'"))
+    synced = Column(Boolean, nullable=True, info=dict(
+        doc="If True, the cache is synced to the server."))
+    sync_timestamp = Column(PickleType, nullable=False, info=dict(
+        doc="timestamp for the next sync. (If None, cache will be invalidated.)"))
+    last_update = Column(DateTime, nullable=True, info=dict(
+        doc="Time of the last update."))
 
-class DBInfo(TableBase):
-    __tablename__ = 'dbinfo'
-    url_base = Column(Unicode, nullable=False, primary_key=True)
-    last_revision = Column(Integer, nullable=True)
-    last_update = Column(DateTime, nullable=True)
+class Page(TableBase):
+    __tablename__ = 'articles'
+    wiki_id = Column(Unicode, ForeignKey('wikis.url_base'), primary_key=True, nullable=False, info=dict(
+        doc="ID of the Wiki this artile is part of"))
+    title = Column(Unicode, primary_key=True, nullable=False, info=dict(
+        doc="Title of the article"))
+    contents = Column(Unicode, nullable=True, info=dict(
+        doc="Textual contents of the article. NULL if there's no such article."))
+    revision = Column(Integer, nullable=False, info=dict(
+        doc="RevID of the article that `contents` reflect."))
+    up_to_date = Column(Boolean, nullable=False, info=dict(
+        doc="True if `revision` is provably the last revision of this article as of wiki.sync_timestamp"))
+
+Page.wiki = relationship(Wiki)
+
+import collections
+import functools
+
+def lru_cache(maxsize=100):
+    '''Least-recently-used cache decorator.
+
+    Arguments to the cached function must be hashable.
+    Cache performance statistics stored in f.hits and f.misses.
+    http://en.wikipedia.org/wiki/Cache_algorithms#Least_Recently_Used
+
+    '''
+    def decorating_function(user_function):
+        cache = collections.OrderedDict()    # order: least recent to most recent
+
+        @functools.wraps(user_function)
+        def wrapper(*args, **kwds):
+            key = args
+            if kwds:
+                key += tuple(sorted(kwds.items()))
+            try:
+                result = cache.pop(key)
+                wrapper.hits += 1
+            except KeyError:
+                result = user_function(*args, **kwds)
+                wrapper.misses += 1
+                if len(cache) >= maxsize:
+                    cache.popitem(0)    # purge least recently used cache entry
+            cache[key] = result         # record recent use of this key
+            return result
+        wrapper.hits = wrapper.misses = 0
+        wrapper.cache = cache
+        return wrapper
+    return decorating_function
 
 class WikiCache(object):
-    """A local MediaWiki article cache
+    """A cache of a MediaWiki
 
-    The cache automatically synchronizes with the server when the WikiCache
-    object is created (or when update() is called).
-
-    No locking is implemented, so only one WikiCache may work with a given path
-    at one time.
-
-    init arguments:
-    `url_base`:  The URL base for MW API requests, including trailing '?' (e.g.
-            'http://en.wikipedia.org/w/api.php?'
-    `path`:  Local filesystem path for the cache. If empty, the cache is
-            initialized.
-
-    Articles are retreived using __getitem__; if the requested article is not
-    in the cache it's fetched from the server.
+    :param url_base: Base URL of the MediaWiki API, including a '?',
+        e.g. 'http://en.wikipedia.org/w/api.php?'
+    :param db_path: Path to a SQLite file holding the cache, or SQLAlchemy
+        database URL. If not given, a file next to the wikicache module will be
+        used.
+    :param sync: If true (default), the cache will sync() itself to the
+        remote wiki. This is potentially a time-consuming operation.
+    :param update: If true (default), the cache will update() itself to reflect
+        the current state of the remote wiki, if it wasn't updated in a while.
+    :param limit: The cache will not make more than one request each `limit`
+        seconds.
     """
-    seconds_per_request = 5
+    def __init__(self, url_base, db_url=None, sync=True, update=True, limit=5):
+        if db_url is None:
+            db_url = os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                'caches.sqlite')
 
-    def __init__(self, url_base, db_path):
-        db_path = os.path.abspath(db_path)
-        engine = create_engine('sqlite:///' + db_path)
+        if '://' not in db_url:
+            db_url = os.path.abspath(db_url)
+            db_url = 'sqlite:///' + db_url
+
+        engine = create_engine(db_url)
         sm = sessionmaker(bind=engine)
         self.session = sm()
 
-        try:
-            self.dbinfo = self.session.query(DBInfo).one()
-        except sqlalchemy.exc.OperationalError:
-            metadata.create_all(engine)
-            self.dbinfo = DBInfo()
-            self.dbinfo.url_base = url_base
-            self.dbinfo.last_revision = None
-            self.session.add(self.dbinfo)
-            self.session.commit()
-        else:
-            assert self.dbinfo.url_base == url_base
-
         self.url_base = url_base
+        self.limit = limit
+        self._needed_metadata = set()
+        self._needed_pages = set()
 
-        hour_ago = datetime.datetime.today() - datetime.timedelta(hours=1)
-        if not self.dbinfo.last_update or self.dbinfo.last_update < hour_ago:
+        self._page_object = lru_cache(100)(self._page_object)
+
+        query = self.session.query(Wiki).filter_by(url_base=url_base)
+        try:
+            self.wiki = query.one()
+        except (sqlalchemy.exc.OperationalError, sqlalchemy.orm.exc.NoResultFound):
+            metadata.create_all(engine)
+            self.wiki = Wiki()
+            self.wiki.url_base = url_base
+            self.wiki.sync_timestamp = None
+            self.session.add(self.wiki)
             self.update()
         else:
-            print 'DB cache: Skipping update: %s < %s' % (
-                    self.dbinfo.last_update, hour_ago)
+            if update:
+                hour_ago = datetime.datetime.today() - datetime.timedelta(minutes=10)
+                if not self.wiki.last_update or self.wiki.last_update < hour_ago:
+                    self.update()
+                else:
+                    self.log('Skipping update')
 
-    def query(self):
-        return self.session.query(Article)
+        if sync:
+            self.sync()
 
-    def article_object(self, pagename):
-        try:
-            return self.query().filter_by(name=pagename).one()
-        except sqlalchemy.orm.exc.NoResultFound:
-            obj = Article()
-            obj.name = pagename
+    def log(self, string):
+        print string
+
+    def _page_query(self):
+        return self.session.query(Page)
+
+    def _page_object(self, title):
+        """Get an object for the page 'title', *w/o* adding it to the session
+        """
+        obj = self._page_query().get((self.url_base, title))
+        if obj:
+            return obj
+        else:
+            obj = Page()
+            obj.wiki = self.wiki
+            obj.title = title
             obj.revision = 0
             obj.up_to_date = False
             return obj
 
-    def apirequest_raw(self, **params):
-        """Raw MW API request; returns filelike object"""
-
+    @property
+    def _sleep_seconds(self):
+        """Number of seconds to sleep until next request"""
         now = lambda: datetime.datetime.today()
         try:
             next_time = self._next_request_time
         except AttributeError:
-            pass
+            return 0
         else:
-            while now() < next_time:
-                print 'Sleeping...'
-                time.sleep(1)
+            sleep_seconds = (next_time - now()).total_seconds()
+            if sleep_seconds > 0:
+                return sleep_seconds
+            else:
+                return 0
+
+    def _apirequest_raw(self, **params):
+        """Raw MW API request; returns filelike object"""
+
+        sleep_seconds = self._sleep_seconds
+        if sleep_seconds > 0:
+            self.log('Sleeping %ss' % sleep_seconds)
+            time.sleep(sleep_seconds)
 
         try:
             enc = lambda s: unicode(s).encode('utf-8')
             params = [(enc(k), enc(v)) for k, v in params.items()]
             url = self.url_base + urllib.urlencode(params)
-            print 'GET', url
+            self.log('GET %s' % url)
             result = urllib.urlopen(url)
             return result
         finally:
-            self._next_request_time = now() + datetime.timedelta(
-                    seconds=self.seconds_per_request)
+            self._next_request_time = (datetime.datetime.today() +
+                    datetime.timedelta(seconds=self.limit))
 
     def apirequest(self, **params):
         """MW API request; returns result dict"""
         params['format'] = 'yaml'
-        return yaml.load(self.apirequest_raw(**params))
+        return yaml.load(self._apirequest_raw(**params))
 
     def update(self):
-        """Synchronize the cache with the server"""
-        # Do this by checking the Recent Changes feed and removing changed
-        # stuff from the cache; it'll be downloaded again if requested.
-        def get_cont_changes(**kwargs):
+        """Fetch a batch of page changes from the server"""
+        if self.wiki.sync_timestamp is None:
             feed = self.apirequest(action='query', list='recentchanges',
-                    rcprop='title|ids|sizes|flags|user', **kwargs)
-            cont = feed['query-continue']['recentchanges']
-            changes = feed['query']['recentchanges']
-            return cont, changes
-        cont, changes = get_cont_changes()
-        last_revid = None
-        if not self.dbinfo.last_revision:
+                    rcprop='timestamp', rclimit=1)
+            last_change = feed['query']['recentchanges'][0]
+            self.wiki.sync_timestamp = last_change['timestamp']
             self.invalidate_cache()
-            for change in changes:
-                if change['revid']:
-                    last_revid = int(changes[0]['revid'])
-                    break
+            self.synced = True
         else:
-            purged = set()
-            for x in range(5000):
-                if not changes:
-                    cont, changes = get_cont_changes(rclimit=100, **cont)
-                if changes[0]['revid'] == self.dbinfo.last_revision:
-                    break
-                title = changes[0]['title']
-                if title not in purged:
-                    print u'Purging {0} (edit by {1})'.format(title,
-                            changes[0]['user'])
-                    self.invalidate_pages([title])
-                    purged.add(title)
-                del changes[0]
-                if last_revid is None and changes[0]['revid']:
-                    last_revid = int(changes[0]['revid'])
+            feed = self.apirequest(action='query', list='recentchanges',
+                    rcprop='title|user|timestamp', rclimit=100,
+                    rcend=self.wiki.sync_timestamp
+                )
+            invalidated = set()
+            changes = feed['query']['recentchanges']
+            for change in changes:
+                title = change['title']
+                if title not in invalidated:
+                    self.log(u'Change to {0} by {1}'.format(title,
+                            change['user']))
+                    obj = self._page_object(title)
+                    obj.up_to_date = False
+                    invalidated.add(title)
+            try:
+                self.wiki.sync_timestamp = feed['query-continue']['recentchanges']['rcend']
+            except KeyError:
+                self.wiki.sync_timestamp = changes[0]['timestamp']
+                self.wiki.synced = True
             else:
-                print 'Too many recent changes; invalidating cache entirely'
-                self.invalidate_cache()
-        if last_revid:
-            self.dbinfo.last_revision = last_revid
-        self.dbinfo.last_update = datetime.datetime.today()
+                self.wiki.synced = False
+        self.wiki.last_update = datetime.datetime.today()
         self.session.commit()
-        print 'Wiki cache is at revision', self.dbinfo.last_revision
+
+    def sync(self):
+        while not self.wiki.synced:
+            self.update()
 
     def invalidate_cache(self):
-        """Invalidate the cache
+        """Invalidate the entire cache
 
         This marks all articles for re-downloading when requested.
         Note that articles with a current revision ID will not be re-downloaded
         entirely, only their metadata will be queried.
         (To clear the cache entirely, truncate the articles table.)
         """
-        self.query().update({'up_to_date': False})
+        self._page_query().update({'up_to_date': False})
         self.session.commit()
 
-    def invalidate_pages(self, pagenames):
-        """Invalidate the specified articles from the cache
+    def mark_needed_pages(self, titles):
+        """Inform the cache that pages with `titles` will be needed soon
 
-        They will be downloaded again if requested.
-
-        This function, or invalidate_cache(), is always called when pages are
-        invalidated, so subclasses may extend them to get notifications.
+        Calling this (even multiple times) before requesting pages can speed
+        things up and ease the load on the server.
         """
+        needed_titles = set(titles)
+        needed_titles.difference_update(t for t, in self._page_object.cache)
+        if len(needed_titles) > 2:
+            objects = self._page_query().filter(Page.title.in_(titles)).all()
+        else:
+            objects = (self._page_object(t) for t in titles)
+        for obj in objects:
+            self.session.add(obj)
+            if not obj.up_to_date and obj not in self._needed_pages:
+                self._needed_metadata.add(obj)
+        self.fetch_pages(force=False)
 
-        self.session.rollback()
-        self.query().filter(Article.name.in_(pagenames)).update(
-                {'up_to_date': False}, synchronize_session=False)
-        self.session.commit()
-        self.session.expire_all()
+    def _get_chunk(self, source, limit=10, title_limit=200):
+        """Get some pages from a set
 
-    def fetch_pages(self, pagenames):
-        """Fetch the given pages from the server, if needed
-
-        This function is called automatically when a page is requested, but
-        it's more efficient (and lighter on the server) to call it before
-        lots of pages are needed.
+        Limit by number of pages (limit) and total length of titles
+        (title_limit).
         """
+        chunk = set()
+        length = 0
+        source = set(source)
+        while source:
+            item = source.pop()
+            if len(chunk) >= limit or length + len(item.title) > title_limit:
+                return chunk, True
+            else:
+                chunk.add(item)
+                length += len(item.title)
+        return chunk, False
 
-        pages_by_name = {}
+    def _fetch_metadata(self, force=True):
+        """Fetch needed page metadata from the server.
 
-        pages_to_fetch = set()
-        for pagename in pagenames:
-            obj = self.article_object(pagename)
-            if not obj.up_to_date:
-                pages_to_fetch.add(obj)
-                pages_by_name[pagename] = obj
-
-        def chunks_with_name_limit(objs, n):
-            result = []
-            for obj in objs:
-                if result and (len(result) > n or
-                        sum(len(r.name) for r in result) +
-                        len(obj.name) > 400):
-                    yield result
-                    result = []
-                result.append(obj)
-            if result:
-                yield result
-
-        new_pages = []
-
-        for articles in chunks_with_name_limit(sorted(pages_to_fetch), 50):
-            result = self.apirequest(action='query', info='lastrevid',
-                    prop='revisions',
-                    titles='|'.join(a.name for a in articles))
-            assert 'normalized' not in result['query'], (
-                    result['query']['normalized'])
-            for page_info in result['query'].get('pages', []):
-                page = pages_by_name[page_info['title']]
-                if 'missing' in page_info:
-                        page.missing = True
-                        page.up_to_date = True
-                        page.revision = 0
-                        page.contents = None
-                        self.session.add(page)
-                else:
-                    if page_info['revisions'][0]['revid'] != page.revision:
-                        new_pages.append(page)
-                    else:
-                        page.up_to_date = True
-
-        for articles in chunks_with_name_limit(sorted(new_pages), 10):
-            dump = self.apirequest_raw(action='query',
-                    export='1', exportnowrap='1',
-                    titles='|'.join(a.name for a in articles))
-            tree = ElementTree.parse(dump)
-            for elem in tree.getroot():
-                tag = elem.tag
-                if tag.endswith('}siteinfo'):
-                    continue
-                elif tag.endswith('}page'):
-                    revision, = (e for e in elem if e.tag.endswith('}revision'))
-                    pagename, = (e for e in elem if e.tag.endswith('}title'))
-                    text, = (e for e in revision if e.tag.endswith('}text'))
-                    revid, = (e for e in revision if e.tag.endswith('}id'))
-                    page = pages_by_name[pagename.text]
-                    page.missing = False
-                    page.up_to_date = True
-                    page.revision = int(revid.text)
-                    page.contents = text.text
+        :param force: If true (default), all needed metadata will be fetched.
+            Otherwise, some can be left over.
+        """
+        while True:
+            chunk, needed = self._get_chunk(self._needed_metadata, limit=50)
+            if not chunk:
+                return
+            elif needed or force:
+                result = self.apirequest(action='query',
+                        info='lastrevid', prop='revisions', # XXX: will be unnecessary in modern MW
+                        titles='|'.join(p.title for p in chunk))
+                assert 'normalized' not in result['query'], (
+                        result['query']['normalized'])  # XXX: normalization
+                pages_by_title = dict((p.title, p) for p in chunk)
+                for page_info in result['query'].get('pages', []):
+                    page = pages_by_title[page_info['title']]
                     self.session.add(page)
-                else:
-                    raise ValueError(tag)
-        self.session.commit()
+                    if 'missing' in page_info:
+                            page.up_to_date = True
+                            page.revision = 0
+                            page.contents = None
+                    else:
+                        revid = page_info['revisions'][0]['revid']
+                        # revid = page_info['lastrevid']  # for the modern MW
+                        if revid != page.revision:
+                            self._needed_pages.add(page)
+                        else:
+                            page.up_to_date = True
+                self._needed_metadata -= chunk
+                self.session.commit()
+            else:
+                return
 
-    def is_up_to_date(self, pagename):
-        """Tests if the article is currently cached & up-to-date."""
-        return self.article_object(pagename).up_to_date
+    def fetch_pages(self, titles=(), force=True):
+        """Fetch needed pages from the server.
 
-    def __getitem__(self, pagename):
-        self.fetch_pages([pagename])
-        obj = self.article_object(pagename)
-        assert obj.up_to_date
+        :param force: If true (default), pages will be fetched.
+            Otherwise, the pages might be fetched, or may be left for later.
+        """
+        if titles:
+            self.mark_needed_pages(titles)
+        self._fetch_metadata(force=force)
+        while True:
+            chunk, needed = self._get_chunk(self._needed_pages, limit=20)
+            if not chunk:
+                return
+            elif needed or force:
+                pages_by_title = dict((p.title, p) for p in chunk)
+                dump = self._apirequest_raw(action='query',
+                        export='1', exportnowrap='1',
+                        titles='|'.join(p.title for p in chunk))
+                tree = ElementTree.parse(dump)
+                for elem in tree.getroot():
+                    tag = elem.tag
+                    if tag.endswith('}siteinfo'):
+                        continue
+                    elif tag.endswith('}page'):
+                        revision, = (e for e in elem if e.tag.endswith('}revision'))
+                        pagename, = (e for e in elem if e.tag.endswith('}title'))
+                        text, = (e for e in revision if e.tag.endswith('}text'))
+                        revid, = (e for e in revision if e.tag.endswith('}id'))
+                        page = pages_by_title[pagename.text]
+                        page.up_to_date = True
+                        page.revision = int(revid.text)
+                        page.contents = text.text
+                        self.session.add(page)
+                    else:
+                        print elem, list(elem)
+                        raise ValueError(tag)
+                self._needed_pages -= chunk
+                self.session.commit()
+            else:
+                return
+
+    def is_up_to_date(self, title):
+        """Test if the article is currently cached & up-to-date."""
+        return self._page_object(title).up_to_date
+
+    def __getitem__(self, title):
+        """Return the content of a page, if it exists, or raise KeyError
+        """
+        text = self.get(title)
+        if text is None:
+            raise KeyError(title)
+        else:
+            return text
+
+    def get(self, title, default=None):
+        if not title:
+            return default
+        obj = self._page_object(title)
+        if not obj.up_to_date:
+            self.fetch_pages([title])
+            assert obj.up_to_date
         if obj.contents is None:
-            raise KeyError(pagename)
+            return default
+        else:
+            return obj.contents
+
+    def get_cached_content(self, title):
+        """Return cached, possibly old or empty, content of a page
+        """
+        obj = self._page_object(title)
+        if obj.contents is None:
+            return u''
         else:
             return obj.contents
