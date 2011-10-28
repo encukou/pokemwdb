@@ -266,40 +266,22 @@ class WikiChecker(object):
     def check(self):
         errors = []
         checkers = []
-        needed_articles = []
-        needed_articles_set = set()
 
-        def _run_one(checker, number):
+        for checker, i in zip(self.checkers(), xrange(9999999)):
+            needs_articles = False
+            needed_articles = getattr(checker, 'needed_articles', [])
+            self.cache.mark_needed_pages(needed_articles)
+            for article in needed_articles:
+                if not self.cache.is_up_to_date(article):
+                    needs_articles = True
+            checkers.append((checker, i))
+        self.cache.fetch_pages()
+        for checker, number in checkers:
             new_errors = list(checker())
             for error in new_errors:
                 error.checker_number = number
                 print error.str_format()
             errors.extend(new_errors)
-
-        def _run():
-            print 'Running %s checkers with %s needed articles' % (
-                    len(checkers), len(needed_articles))
-            self.cache.fetch_pages(needed_articles)
-            for checker, number in checkers:
-                _run_one(checker, number)
-            del checkers[:]
-            del needed_articles[:]
-
-        for checker, i in itertools.izip(self.checkers(), xrange(999999)):
-            needs_articles = False
-            for article in getattr(checker, 'needed_articles', []):
-                if not self.cache.is_up_to_date(article):
-                    needs_articles = True
-                    if article not in needed_articles_set:
-                        needed_articles_set.add(article)
-                        needed_articles.append(article)
-            if needs_articles:
-                checkers.append((checker, i))
-            else:
-                _run_one(checker, i)
-            if len(needed_articles) >= 20 or len(checkers) > 50:
-                _run()
-        _run()
         print '%s mismatches found' % len(errors)
 
         try:
@@ -318,7 +300,7 @@ class WikiChecker(object):
             {{User:En-Cu-Kou/T|head|||
 
                 | site = %s
-                | wiki revision = %s (%s)
+                | wiki revision = %s
                 |
 
             This report shows:
@@ -328,8 +310,7 @@ class WikiChecker(object):
             It's up to humans to decide which is which.
             }}
 
-            ''' % (base_url, self.cache.dbinfo.last_revision,
-                    self.cache.dbinfo.last_update)))
+            ''' % (base_url, self.cache.wiki.sync_timestamp)))
             ignored = []
             for error in sorted(errors, key=lambda e: (e.sort_key, e.checker_number, e.args)):
                 str_formatted = error.str_format()
