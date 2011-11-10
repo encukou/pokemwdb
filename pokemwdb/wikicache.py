@@ -4,6 +4,7 @@ import urllib
 import time
 import collections
 import functools
+import re
 
 from sqlalchemy.ext.declarative import declarative_base, DeclarativeMeta
 from sqlalchemy import Column, ForeignKey, MetaData, PrimaryKeyConstraint, Table, UniqueConstraint
@@ -371,7 +372,7 @@ class WikiCache(object):
         else:
             return text
 
-    def get(self, title, default=None):
+    def get(self, title, default=None, follow_redirect=False):
         if not title:
             return default
         obj = self._page_object(title)
@@ -381,6 +382,14 @@ class WikiCache(object):
         if obj.contents is None:
             return default
         else:
+            if follow_redirect:
+                redirect_match = re.match(r'#REDIRECT +\[\[([^\]]+)\]\]',
+                        obj.contents)
+                if redirect_match:
+                    try:
+                        return self[redirect_match.group(1)]
+                    except KeyError:
+                        pass
             return obj.contents
 
     def get_cached_content(self, title):
