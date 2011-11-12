@@ -96,6 +96,12 @@ class Section(Content):
         for item in self:
             item.dump(indent_level + 1)
 
+    @property
+    def header(self):
+        for element in self:
+            if isinstance(element, Header):
+                return element
+
 class String(unicode):
     def visit(self, visitor):
         pass
