@@ -9,6 +9,8 @@ setup(
         'pyyaml',
         'pokedex',
         'SQLAlchemy>=0.7',
+        'diff-match-patch',
+        'termcolor',
     ],
     packages=find_packages(exclude=['ez_setup']),
 )
