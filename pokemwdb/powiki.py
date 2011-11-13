@@ -29,9 +29,10 @@ def make_diff(a, b):
     differ.diff_cleanupSemantic(diff)
     return diff
 
-def wiki_colorizer(color):
+def wiki_colorizer(light, dark, name):
     def colorizer(text):
-        return '<b style="color:%s;">%s</b>' % (color, text)
+        template = '<b style="background-color:#{light};outline:1px solid #{dark}" class="diff-{name}">{text}</b>'
+        return template.format(light=light, dark=dark, text=text, name=name)
     return colorizer
 
 def term_colorizer(color):
@@ -40,14 +41,17 @@ def term_colorizer(color):
     return colorizer
 
 term_colorizers = term_colorizer('cyan'), term_colorizer('yellow')
-wiki_colorizers = wiki_colorizer('#2795ae'), wiki_colorizer('#b2884a')
+wiki_colorizers = (
+        wiki_colorizer('9de6ec', '2795ae', 'wiki'),
+        wiki_colorizer('d7b078', 'b2884a', 'vee'),
+    )
 
 def print_diff(diff, file=None, colorizers=term_colorizers):
     if file is None:
         file = sys.stdout
     for side, text in diff:
         if side != 0:
-            text = text.replace(' ', '·').replace('\n', '↵\n')
+            text = text.replace('\n', '↵\n')
             text = colorizers[side == 1](text)
         file.write(text.encode('utf-8'))
     file.write('\n')
@@ -59,7 +63,6 @@ def print_wiki_diff(diff, file=None):
         yield 0, ' '
         for side, text in diff:
             text = re.sub(r'[^a-zA-Z0-9 \n]', entity_encode, text)
-            text = text.replace('\n', '\n<br>')
             yield side, text
     print_diff(generator(), file, wiki_colorizers)
 
@@ -209,6 +212,7 @@ def get_effect_diff(section, effect, changelog, generation_introduced):
             changelog[1:] + [None]
         )
     for change, next in previous_change_next:
+        wikitexts.append('')
         wikitexts.append(get_generation_heading(change, next, generation_introduced))
         changes = []
         try:
@@ -217,7 +221,7 @@ def get_effect_diff(section, effect, changelog, generation_introduced):
             pass
         else:
             if change.type:
-                changes.append('Type is %s.' % change.type.name)
+                changes.append('Is a %s-type move.' % change.type.name)
             if change.power:
                 changes.append('Base Power is %s.' % change.power)
             if change.pp:
@@ -225,7 +229,7 @@ def get_effect_diff(section, effect, changelog, generation_introduced):
             if change.accuracy:
                 changes.append('Accuracy is %s.' % change.accuracy)
             if change.effect_chance:
-                changes.append('Effect chance is %s%%' % change.effect_chance)
+                changes.append('Effect chance is %s%%.' % change.effect_chance)
         if change.effect:
             changes.append(markdown_to_wikitext(change.effect))
         wikitexts.append(' '.join(changes))
@@ -243,8 +247,7 @@ def analyze_move(article, move):
             return analyze_move_effect(section, move)
             break
     else:
-        #analyze_move_effect(article, move)
-        pass
+        return False
 
 def main():
     for move in session.query(tables.Move):
@@ -277,6 +280,8 @@ def main():
             ).encode('utf-8'))
 
         header_texts = dict()
+        good_articles = set()
+        bad_articles = set()
         for move in sorted(session.query(tables.Move), key=lambda m: m.name):
             wikitext = wiki.get(move.name + ' (move)', follow_redirect=True)
             if wikitext is None:
@@ -294,7 +299,7 @@ def main():
                 ([{{{{fullurl:{0}|action=edit}}}} edit] ◦
                 [[Talk::{0}|talk]] ◦
                 [{{{{fullurl:{0}|action=history}}}} history]) ◦
-                [http://veekun.com/dex/moves/{2} {3}]
+                [http://veekun.com/dex/moves/{2}#effect {3}]
                 </div>
                 """)
                 wikifile.write(template.format(
@@ -305,12 +310,18 @@ def main():
                     ).encode('utf-8'))
                 print_diff(diff)
                 print_diff(diff, catfile)
-                wikifile.write('<div style="font-family:monospace;">')
+                wikifile.write('<div style="font-family:monospace;white-space:pre;white-space:pre-wrap;">')
                 print_wiki_diff(diff, wikifile)
                 wikifile.write('</div><br style="clear:both;">\n')
                 print
+            elif diff is False:
+                bad_articles.add(move.name)
             else:
-                pass
-                #print colored(move.name, 'blue') + ': OK'
+                good_articles.add(move.name)
+        wikifile.write('\n')
+        wikifile.write('\n=Victory! No differences detected=\n' +
+                ', '.join('[[%s]]' % n for n in sorted(good_articles)))
+        wikifile.write('\n=Moves with no Effect section=\n' +
+                ', '.join('[[%s]]' % n for n in sorted(bad_articles)))
 
 main()
