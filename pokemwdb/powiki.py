@@ -218,6 +218,9 @@ def get_generation_heading(current, next, generation_introduced):
                 texts.append('Generation {0}-{1}'.format(*entry))
     return '=== %s ===' % ', '.join(texts)
 
+def remove_refs(text):
+    return re.sub(r'<ref>([^<]|<(?!/ref>))*</ref>', '', text)
+
 def get_effect_diff(section, effect, changelog, generation_introduced):
     wikitexts = ['== Effect ==']
     if changelog:
@@ -251,7 +254,7 @@ def get_effect_diff(section, effect, changelog, generation_introduced):
         if change.effect:
             changes.append(markdown_to_wikitext(change.effect))
         wikitexts.append(' '.join(changes))
-    section_text = unicode(section).strip()
+    section_text = remove_refs(unicode(section)).strip()
     wikitext = '\n'.join(wikitexts)
     if wikitext == section_text:
         return None
