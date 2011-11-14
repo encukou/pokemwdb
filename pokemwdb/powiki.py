@@ -206,6 +206,8 @@ def get_effect_diff(section, effect, changelog, generation_introduced):
     wikitexts = ['== Effect ==']
     if changelog:
         wikitexts.append(get_generation_heading(None, changelog[0], generation_introduced))
+    else:
+        wikitexts.append(get_generation_heading(None, None, generation_introduced))
     wikitexts.append(markdown_to_wikitext(effect))
     previous_change_next = zip(
             changelog,
