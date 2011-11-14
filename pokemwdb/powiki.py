@@ -321,9 +321,11 @@ def main():
             else:
                 good_articles.add(move.name)
         wikifile.write('\n')
-        wikifile.write('\n=Victory! No differences detected=\n' +
-                ', '.join('[[%s]]' % n for n in sorted(good_articles)))
-        wikifile.write('\n=Moves with no Effect section=\n' +
-                ', '.join('[[%s]]' % n for n in sorted(bad_articles)))
+        if good_articles:
+            wikifile.write('\n=Victory! No differences detected=\n' +
+                    ', '.join('[[%s]]' % n for n in sorted(good_articles)))
+        if bad_articles:
+            wikifile.write('\n=Moves with no Effect section=\n' +
+                    ', '.join('[[%s]]' % n for n in sorted(bad_articles)))
 
 main()
