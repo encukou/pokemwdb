@@ -315,8 +315,7 @@ def main():
                 print term_header
                 catfile.write(term_header + '\n')
                 template = '={0}=\n' + re.sub(r'\s+', ' ', """
-                <span class="plainlinks">
-                <div style="float:right;border:1px solid #eee;padding:1ex;white-space:pre;">[[{0}|{1}]]
+                <div style="float:right;border:1px solid #eee;padding:1ex;white-space:pre;" class="plainlinks">[[{0}|{1}]]
                 ([{{{{fullurl:{0}|action=edit}}}} edit] ◦
                 [[Talk:{0}|talk]] ◦
                 [{{{{fullurl:{0}|action=history}}}} history]) ◦
