@@ -249,7 +249,7 @@ def get_effect_diff(section, effect, changelog, generation_introduced):
                 changes.append('PP is %s.' % change.pp)
             if change.accuracy:
                 changes.append('Accuracy is %s.' % change.accuracy)
-            if change.effect_chance:
+            if change.effect_chance and not change.effect:
                 changes.append('Effect chance is %s%%.' % change.effect_chance)
         if change.effect:
             changes.append(markdown_to_wikitext(change.effect))
