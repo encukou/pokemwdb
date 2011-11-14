@@ -199,7 +199,7 @@ def get_generation_heading(current, next, generation_introduced):
             if start == end:
                 texts.append('Generation {0}'.format(start))
             else:
-                texts.append('Generations {0}-{1}'.format(*entry))
+                texts.append('Generation {0}-{1}'.format(*entry))
     return '=== %s ===' % ', '.join(texts)
 
 def get_effect_diff(section, effect, changelog, generation_introduced):
