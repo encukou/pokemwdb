@@ -373,6 +373,12 @@ class WikiCache(object):
             return text
 
     def get(self, title, default=None, follow_redirect=False):
+        if follow_redirect:
+            try:
+                return self[self.redirect_target(title)]
+            except KeyError:
+                pass
+
         if not title:
             return default
         obj = self._page_object(title)
@@ -382,15 +388,22 @@ class WikiCache(object):
         if obj.contents is None:
             return default
         else:
-            if follow_redirect:
-                redirect_match = re.match(r'#REDIRECT +\[\[([^\]]+)\]\]',
-                        obj.contents)
-                if redirect_match:
-                    try:
-                        return self[redirect_match.group(1)]
-                    except KeyError:
-                        pass
             return obj.contents
+
+    def redirect_target(self, title):
+        """Get a target redirect
+
+        If the page at `title` is a redirect, return what it's pointing to,
+        otherwise return `title` unchanged
+        """
+        self.fetch_pages([title])
+        content = self.get(title)
+        if content:
+            redirect_match = re.match(r'#REDIRECT +\[\[([^\]]+)\]\]',
+                    content)
+            if redirect_match:
+                return redirect_match.group(1)
+        return title
 
     def get_cached_content(self, title):
         """Return cached, possibly old or empty, content of a page

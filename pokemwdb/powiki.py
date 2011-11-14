@@ -74,11 +74,27 @@ def named_sections(node):
             yield subnode
 
 class LinkExtension(markdown.PokedexLinkExtension):
+    def normalized_wiki_title(self, title, category):
+        return normalize_article_name(self.correct_wiki_title(title, category))
+
+    def correct_wiki_title(self, title, category):
+        full_title = '%s (%s)' % (title, category)
+        try:
+            full_page = wiki[normalize_article_name(full_title)]
+        except KeyError:
+            return title
+        if wiki.redirect_target(full_title) == title:
+            return title
+        elif wiki.redirect_target(title) == full_title:
+            return title
+        else:
+            return full_title
+
     def object_url(self, category, obj):
-        return obj.name
+        return self.normalized_wiki_title(obj.name, category)
 
     def identifier_url(self, category, identifier):
-        return identifier
+        return self.normalized_wiki_title(identifier, category)
 
 link_extension = LinkExtension(session)
 
