@@ -297,7 +297,7 @@ def main():
                 <span class="plainlinks">
                 <div style="float:right;border:1px solid #eee;padding:1ex;white-space:pre;">[[{0}|{1}]]
                 ([{{{{fullurl:{0}|action=edit}}}} edit] ◦
-                [[Talk::{0}|talk]] ◦
+                [[Talk:{0}|talk]] ◦
                 [{{{{fullurl:{0}|action=history}}}} history]) ◦
                 [http://veekun.com/dex/moves/{2}#effect {3}]
                 </div>
