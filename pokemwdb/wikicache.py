@@ -266,7 +266,7 @@ class WikiCache(object):
                 self._needed_metadata.add(obj)
         self.fetch_pages(force=False)
 
-    def _get_chunk(self, source, limit=10, title_limit=200):
+    def _get_chunk(self, source, limit=20, title_limit=700):
         """Get some pages from a set
 
         Limit by number of pages (limit) and total length of titles
@@ -330,7 +330,7 @@ class WikiCache(object):
             self.mark_needed_pages(titles)
         self._fetch_metadata(force=force)
         while True:
-            chunk, needed = self._get_chunk(self._needed_pages, limit=20)
+            chunk, needed = self._get_chunk(self._needed_pages)
             if not chunk:
                 return
             elif needed or force:
