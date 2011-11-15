@@ -168,14 +168,6 @@ def combined_move_changelog(move):
                 yield curr
     return list(generator())
 
-def analyze_move_effect(section, move):
-    """Analyze a MediaWiki section containing a move effect
-
-    Returns either None if the section matches the database, or a diff.
-    """
-    return get_effect_diff(section, move.effect,
-            combined_move_changelog(move), move.generation)
-
 def markdown_to_wikitext(effect):
     tree = etree.fromstring('<div>' + effect.as_html(link_extension) + '</div>')
     wikitext = etree_to_wikitext(tree)
@@ -193,8 +185,10 @@ def get_generation_heading(current, next, generation_introduced):
     current = last_in(current, version_groups[-1])
     if next:
         next = next.changed_in
-    else:
+    elif generation_introduced:
         next = generation_introduced.version_groups[0]
+    else:
+        next = current
     _index = version_groups.index
     included_version_groups = version_groups[_index(next):_index(current) + 1]
     entries = []
@@ -228,7 +222,7 @@ def get_generation_heading(current, next, generation_introduced):
 def remove_refs(text):
     return re.sub(r'<ref>([^<]|<(?!/ref>))*</ref>', '', text)
 
-def get_effect_diff(section, effect, changelog, generation_introduced):
+def get_effect_diff(section, effect, changelog=[], generation_introduced=None):
     wikitexts = ['== Effect ==']
     if changelog:
         wikitexts.append(get_generation_heading(None, changelog[0], generation_introduced))
@@ -277,15 +271,45 @@ def analyze_move(article, move):
     for section in named_sections(article):
         header_name = section.header.name.strip()
         if header_name == 'Effect':
-            return analyze_move_effect(section, move)
-            break
+            return get_effect_diff(section, move.effect,
+                combined_move_changelog(move), move.generation)
     else:
         return False
+
+def analyze_ability(article, ability):
+    for section in named_sections(article):
+        header_name = section.header.name.strip()
+        if header_name == 'Effect':
+            return get_effect_diff(section, ability.effect)
+    else:
+        return False
+
+def analyze_item(article, item):
+    for section in named_sections(article):
+        header_name = section.header.name.strip()
+        if header_name == 'Effect':
+            return get_effect_diff(section, item.effect)
+    else:
+        return False
+
+def get_wikitext(name, page_type):
+    wikitext = wiki.get('%s (%s)' % (name, page_type), follow_redirect=True)
+    if wikitext is None:
+        wikitext = wiki.get(name, follow_redirect=True)
+    return wikitext
 
 def main():
     for move in session.query(tables.Move):
         wiki.mark_needed_pages([move.name + ' (move)'])
         wiki.mark_needed_pages([move.name])
+
+    for ability in session.query(tables.Ability):
+        wiki.mark_needed_pages([ability.name + ' (ability)'])
+        wiki.mark_needed_pages([ability.name])
+
+    for item in session.query(tables.Item):
+        wiki.mark_needed_pages([item.name + ' (item)'])
+        wiki.mark_needed_pages([item.name])
 
     with open('diffs.cat', 'w') as catfile, open('diffs.wiki', 'w') as wikifile:
         try:
@@ -326,17 +350,12 @@ def main():
             while True:
                 yield fake_file
         yield_wikifile = yield_wikifiles().next
-        for move in sorted(session.query(tables.Move), key=lambda m: m.name):
-            wikitext = wiki.get(move.name + ' (move)', follow_redirect=True)
-            if wikitext is None:
-                wikitext = wiki.get(move.name, follow_redirect=True)
-            article = wikiparse.wikiparse(wikitext)
-            diff = analyze_move(article, move)
 
+        def write_diff(diff, veekun_section, name):
             if diff:
-                term_header = termcolor.colored('%s' % move.name, 'blue')
+                term_header = termcolor.colored(name.encode('utf-8'), 'blue')
                 print term_header
-                catfile.write(term_header + '\n')
+                catfile.write(term_header + b'\n')
                 print_diff(diff)
                 print_diff(diff, catfile)
                 template = '={0}=\n' + re.sub(r'\s+', ' ', """
@@ -344,24 +363,44 @@ def main():
                 ([{{{{fullurl:{0}|action=edit}}}} edit] ◦
                 [[Talk:{0}|talk]] ◦
                 [{{{{fullurl:{0}|action=history}}}} history]) ◦
-                [http://veekun.com/dex/moves/{2}#effect {3}]
+                [http://veekun.com/dex/{4}/{2}#effect {3}]
                 </div>
                 """)
                 w_file = yield_wikifile()
                 w_file.write(template.format(
-                        move.name,
+                        name,
                         wiki_colorizers[0]('wiki'),
-                        move.name.lower().replace(' ', '%20'),
+                        name.lower().replace(' ', '%20'),
                         wiki_colorizers[1]('veekun'),
+                        veekun_section,
                     ).encode('utf-8'))
                 w_file.write('<div style="font-family:monospace;white-space:pre;white-space:pre-wrap;">')
                 print_wiki_diff(diff, w_file)
                 w_file.write('</div><br style="clear:both;">\n')
                 print
             elif diff is False:
-                bad_articles.add(move.name)
+                bad_articles.add(name)
             else:
-                good_articles.add(move.name)
+                good_articles.add(name)
+
+        for move in sorted(session.query(tables.Move), key=lambda m: m.name):
+            wikitext = get_wikitext(move.name, 'move')
+            article = wikiparse.wikiparse(wikitext)
+            diff = analyze_move(article, move)
+            write_diff(diff, 'moves', move.name)
+
+        for ability in sorted(session.query(tables.Ability), key=lambda m: m.name):
+            wikitext = get_wikitext(ability.name, 'ability')
+            article = wikiparse.wikiparse(wikitext)
+            diff = analyze_ability(article, ability)
+            write_diff(diff, 'abilities', ability.name)
+
+        for item in sorted(session.query(tables.Item), key=lambda m: m.name):
+            wikitext = get_wikitext(item.name, 'item')
+            article = wikiparse.wikiparse(wikitext)
+            diff = analyze_item(article, item)
+            write_diff(diff, 'items', item.name)
+
         wikifile.write('\n')
         if good_articles:
             wikifile.write('\n=Victory! No differences detected=\n' +
