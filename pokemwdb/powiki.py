@@ -258,9 +258,9 @@ def get_effect_diff(section, effect, changelog=[], generation_introduced=None):
         wikitexts.append(' '.join(changes))
     section_text = unicode(section)
     section_text = remove_refs(section_text)
-    section_text = section_text.replace('{{movestub | }}', '')
-    section_text = section_text.replace('{{imported | move}}', '')
-    section_text = section_text.replace('[[Category:Moves]]', '')
+    section_text = re.sub(r'\[\[Category:[A-Za-z ]*\]\]', '', section_text)
+    section_text = re.sub(r'\{\{(movestub|StubItem|StubAbility) \| \}\}', '', section_text)
+    section_text = re.sub(r'\{\{[Ii]mported *\| *[A-Za-z]*\}\}', '', section_text)
     section_text = section_text.strip()
     wikitext = '\n'.join(wikitexts)
     if wikitext == section_text:
@@ -406,10 +406,10 @@ def main():
 
         wikifile.write('\n')
         if good_articles:
-            wikifile.write('\n=Victory! No differences detected=\n' +
-                    ', '.join('%s' % n for n in sorted(good_articles)))
+            wikifile.write(('\n=Victory! No differences detected=\n' +
+                    ', '.join('%s' % n for n in sorted(good_articles))).encode('utf-8'))
         if bad_articles:
-            wikifile.write('\n=Pages with no Effect section=\n' +
-                    ', '.join('[[%s]]' % n for n in sorted(bad_articles)))
+            wikifile.write(('\n=Pages with no Effect section=\n' +
+                    ', '.join('[[%s]]' % n for n in sorted(bad_articles))).encode('utf-8'))
 
 main()
