@@ -146,6 +146,7 @@ class WikiCache(object):
     def _page_object(self, title):
         """Get an object for the page 'title', *w/o* adding it to the session
         """
+        title = self.normalize_title(title)
         obj = self._page_query().get((self.url_base, title))
         if obj:
             return obj
@@ -413,6 +414,9 @@ class WikiCache(object):
             if redirect_match:
                 return redirect_match.group(1)
         return title
+
+    def normalize_title(self, title):
+        return title[0].upper() + title[1:]
 
     def get_cached_content(self, title):
         """Return cached, possibly old or empty, content of a page
