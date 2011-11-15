@@ -396,11 +396,13 @@ def main():
             diff = analyze_ability(article, ability)
             write_diff(diff, 'abilities', ability.name)
 
+        '''
         for item in sorted(session.query(tables.Item), key=lambda m: m.name):
             wikitext = get_wikitext(item.name, 'item')
             article = wikiparse.wikiparse(wikitext)
             diff = analyze_item(article, item)
             write_diff(diff, 'items', item.name)
+        '''
 
         wikifile.write('\n')
         if good_articles:
