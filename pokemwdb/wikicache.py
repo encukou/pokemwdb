@@ -294,7 +294,14 @@ class WikiCache(object):
             chunk, needed = self._get_chunk(self._needed_metadata, limit=50)
             if not chunk:
                 return
-            elif needed or force:
+            if not needed and force:
+                # Need to get pages anyway, so include some outdated ones
+                query = self.session.query(Page)
+                query = query.filter(Page.wiki == self.wiki)
+                query = query.filter(Page.up_to_date == False)
+                wanted = list(self._needed_metadata) + query[:50]
+                chunk, needed = self._get_chunk(wanted, limit=50)
+            if needed or force:
                 result = self.apirequest(action='query',
                         info='lastrevid', prop='revisions', # XXX: will be unnecessary in modern MW
                         titles='|'.join(p.title for p in chunk))
