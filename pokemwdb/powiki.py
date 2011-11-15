@@ -80,6 +80,7 @@ class LinkExtension(markdown.PokedexLinkExtension):
     def correct_wiki_title(self, title, category):
         title = {
                 # Exceptions
+                'special-attack': 'Special Attack',
                 'special-defense': 'Special Defense',
             }.get(title, title)
         full_title = '%s (%s)' % (title, category)
@@ -115,9 +116,7 @@ def etree_to_wikitext(elem, num=0):
     if elem.tag == 'div':
         return text + content + tail
     elif elem.tag == 'p':
-        if num > 0:
-            text = '*' + text
-        return text + content + '\n' + tail.strip()
+        return text + content + '\n\n' + tail.strip()
     elif elem.tag == 'a':
         href = normalize_article_name(elem.attrib['href'])
         content = text + content
@@ -135,7 +134,9 @@ def etree_to_wikitext(elem, num=0):
         return '! ' + text + content.strip() + '\n'
     elif elem.tag == 'td':
         return '| ' + text + content.strip() + '\n'
-    if elem.tag in ('thead', 'tbody'):
+    elif elem.tag == 'li':
+        return '* ' + text + content + tail
+    if elem.tag in ('thead', 'tbody', 'ul'):
         return text.strip() + content + tail.strip()
     else:
         # XXX
