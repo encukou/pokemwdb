@@ -90,14 +90,14 @@ class WikiCache(object):
     :param db_path: Path to a SQLite file holding the cache, or SQLAlchemy
         database URL. If not given, a file next to the wikicache module will be
         used.
-    :param sync: If true (default), the cache will sync() itself to the
-        remote wiki. This is potentially a time-consuming operation.
     :param update: If true (default), the cache will update() itself to reflect
         the current state of the remote wiki, if it wasn't updated in a while.
+    :param sync: If true (default), the cache will unconditionally sync itself
+        to the remote wiki.
     :param limit: The cache will not make more than one request each `limit`
         seconds.
     """
-    def __init__(self, url_base, db_url=None, sync=True, update=True, limit=5):
+    def __init__(self, url_base, db_url=None, update=True, sync=False, limit=5):
         if db_url is None:
             db_url = os.path.join(os.path.dirname(os.path.abspath(__file__)),
                 'caches.sqlite')
@@ -128,15 +128,14 @@ class WikiCache(object):
             self.session.add(self.wiki)
             self.update()
         else:
-            if update:
+            if sync:
+                self.update()
+            elif update:
                 hour_ago = datetime.datetime.today() - datetime.timedelta(minutes=10)
                 if not self.wiki.last_update or self.wiki.last_update < hour_ago:
                     self.update()
                 else:
                     self.log('Skipping update')
-
-        if sync:
-            self.sync()
 
     def log(self, string):
         print string
@@ -211,29 +210,32 @@ class WikiCache(object):
                     rcprop='title|user|timestamp', rclimit=100,
                     rcend=self.wiki.sync_timestamp
                 )
-            invalidated = set()
-            changes = feed['query']['recentchanges']
-            for change in changes:
-                title = change['title']
-                if title not in invalidated:
-                    self.log(u'Change to {0} by {1}'.format(title,
-                            change['user']))
-                    obj = self._page_object(title)
-                    obj.up_to_date = False
-                    invalidated.add(title)
-            try:
-                self.wiki.sync_timestamp = feed['query-continue']['recentchanges']['rcend']
-            except KeyError:
-                self.wiki.sync_timestamp = changes[0]['timestamp']
-                self.wiki.synced = True
-            else:
-                self.wiki.synced = False
+            sync_timestamp = feed['query']['recentchanges'][0]['timestamp']
+            while feed:
+                invalidated = set()
+                changes = feed['query']['recentchanges']
+                for change in changes:
+                    title = change['title']
+                    if title not in invalidated:
+                        self.log(u'Change to {0} by {1}'.format(title,
+                                change['user']))
+                        obj = self._page_object(title)
+                        obj.up_to_date = False
+                        invalidated.add(title)
+                try:
+                    feed = self.apirequest(action='query', list='recentchanges',
+                            rcprop='title|user|timestamp', rclimit=100,
+                            rcend=self.wiki.sync_timestamp,
+                            **feed['query-continue']['recentchanges']
+                        )
+                except KeyError:
+                    feed = None
+                    self.wiki.sync_timestamp = sync_timestamp
+                    self.wiki.synced = True
+                else:
+                    self.wiki.synced = False
         self.wiki.last_update = datetime.datetime.today()
         self.session.commit()
-
-    def sync(self):
-        while not self.wiki.synced:
-            self.update()
 
     def invalidate_cache(self):
         """Invalidate the entire cache
