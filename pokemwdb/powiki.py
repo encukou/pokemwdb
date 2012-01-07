@@ -122,6 +122,8 @@ def etree_to_wikitext(elem, num=0):
         content = text + content
         if normalize_article_name(content) == href:
             return '[[%s]]' % content + tail
+        elif normalize_article_name(content) == href + 's':
+            return '[[%s]]s' % content[:-1] + tail
         else:
             return '[[%s|%s]]' % (href, content) + tail
     elif elem.tag == 'table':
