@@ -12,6 +12,9 @@ from pokemwdb.wikichecker import (WikiChecker, ArticleChecker,
         WrongTemplateParameter)
 from pokemwdb import wikiparse
 
+session = connect()
+en = session.query(tables.Language).filter_by(identifier='en').one()
+
 def _coleot(value):
     return {'Coleottero': ('Coleot', 'Coleottero')}.get(value, value)  # XXX
 
@@ -37,11 +40,11 @@ class PokemonPrevNextHead(TemplateTemplate):
         self.default_pokemon = self.species.default_pokemon
 
     @normalize(wikiparse.make_wikiname)
-    def prec(self, v): return self.prev.name
+    def prec(self, v): return self.prev.name_map[en]
     def numprec(self, v): return format(self.prev.id, '03')
 
     @normalize(wikiparse.make_wikiname)
-    def succ(self, v): return self.next.name
+    def succ(self, v): return self.next.name_map[en]
     def numsucc(self, v): return format(self.next.id, '03')
 
     @normalize(wikiparse.make_wikiname)
@@ -56,7 +59,7 @@ class PokemonInfobox(TemplateTemplate):
         self.dexnums = dict((dn.pokedex.identifier, dn.pokedex_number) for dn
                 in self.species.dex_numbers)
 
-    def nome(self, v): return self.species.name
+    def nome(self, v): return self.species.name_map[en]
 
     def nomejap(self, v):
         return self.species.name_map[self.dbget(tables.Language, 'ja')]
@@ -482,7 +485,7 @@ class MoveInfobox(TemplateTemplate):
 
 class PokemonChecker(ArticleChecker):
     def __init__(self, checker, species):
-        ArticleChecker.__init__(self, checker, species.name)
+        ArticleChecker.__init__(self, checker, species.name_map[en])
         self.species = species
 
 class CheckPokemonNavigation(PokemonChecker):
@@ -535,17 +538,17 @@ class PCChecker(WikiChecker):
     def __init__(self):
         WikiChecker.__init__(self)
         self.cache.seconds_per_request = 15
-        self.session = connect()
+        self.session = session#connect()
         self.session.default_language_id = self.session.query(
                 tables.Language).filter_by(identifier='it').one().id
 
     def checkers(self):
-        for move in self.session.query(tables.Move).join(tables.Move.names_local).order_by(tables.Move.names_table.name):
-            yield CheckMoveInfobox(self, move)
-            pass
         for species in self.session.query(tables.PokemonSpecies).order_by(tables.PokemonSpecies.id):
             yield CheckPokemonNavigation(self, species)
             yield CheckPokemonInfobox(self, species)
+            pass
+        for move in self.session.query(tables.Move).join(tables.Move.names_local).order_by(tables.Move.names_table.name):
+            yield CheckMoveInfobox(self, move)
             pass
 
 if __name__ == '__main__':
