@@ -6,6 +6,7 @@ import re
 import os
 import stat
 from textwrap import dedent
+from collections import defaultdict, OrderedDict
 
 from pokedex.db import connect, tables, markdown, util
 from lxml import etree
@@ -156,21 +157,6 @@ class CombinedChangelogEntry(object):
         except AttributeError:
             return getattr(self.move_change, attr)
 
-def combined_move_changelog(move):
-    all_changes = move.changelog + move.move_effect.changelog
-    all_changes.sort(key=lambda c: c.changed_in.id, reverse=True)
-    all_changes = [c for c in all_changes
-            if c.changed_in.generation_id >= move.generation.id]
-    def generator():
-        for prev, curr, next in zip([None] + all_changes, all_changes, all_changes[1:] + [None]):
-            if prev and prev.changed_in == curr.changed_in:
-                continue
-            elif next and next.changed_in == curr.changed_in:
-                yield CombinedChangelogEntry(curr, next)
-            else:
-                yield curr
-    return list(generator())
-
 def markdown_to_wikitext(effect):
     tree = etree.fromstring('<div>' + effect.as_html(link_extension) + '</div>')
     wikitext = etree_to_wikitext(tree)
@@ -184,80 +170,90 @@ def last_in(change, default):
     else:
         return version_groups[version_groups.index(change.changed_in) - 1]
 
-def get_generation_heading(current, next, generation_introduced):
-    current = last_in(current, version_groups[-1])
-    if next:
-        next = next.changed_in
-    elif generation_introduced:
-        next = generation_introduced.version_groups[0]
-    else:
-        next = current
-    _index = version_groups.index
-    included_version_groups = version_groups[_index(next):_index(current) + 1]
-    entries = []
-    while included_version_groups:
-        version_group = included_version_groups[0]
-        generation = version_group.generation
-        generation_groups = generation.version_groups
-        if all(vg in included_version_groups for vg in generation_groups):
-            try:
-                entries[-1][1] = generation.id
-            except (IndexError, TypeError):
-                entries.append([generation.id, generation.id])
-            for vg in generation_groups:
-                included_version_groups.remove(vg)
+def get_move_changelog(move):
+    changelog = OrderedDict()
+    current_changes = current_versions = None
+    unchanged = True
+    for version in sorted(move.versions, key=lambda v: v.version_group.order, reverse=True):
+        vg = version.version_group
+        changes = OrderedDict()
+        for attr in 'type power accuracy pp effect_chance'.split():
+            if getattr(version, attr) != getattr(move, attr):
+                changes[attr] = getattr(version, attr)
+        if version.effect_id != move.effect_id:
+            changes['effect'] = markdown_to_wikitext(version.effect)
+        for change in move.move_effect.changelog:
+            if vg.id < change.changed_in.id:
+                changes['effect_change'] = markdown_to_wikitext(change.effect)
+        if changes:
+            unchanged = False
+        if unchanged:
+            changes['effect'] = markdown_to_wikitext(move.effect)
+        changelog[vg] = changes
+    return changelog
+
+def format_changelog(changelog):
+    by_generation = defaultdict(list)
+    for vg, changes in changelog.items():
+        by_generation[vg.generation_id].append((vg, changes))
+    generation_texts = {}
+    # Group by generations; handle intra-generation changes
+    for generation, version_changes in sorted(by_generation.items(), reverse=True):
+        first_change = version_changes[0][1]
+        if all(c == first_change for v, c in version_changes):
+            generation_texts[generation] = format_change(first_change)
         else:
-            for version in version_group.versions:
-                entries.append(version.name)
-            included_version_groups.remove(version_group)
-    texts = []
-    for entry in entries:
-        if isinstance(entry, basestring):
-            texts.append(entry)
+            generation_texts[generation] = '⚠ Subgenerations not done yet ⚠'  # XXX
+    # Merge identical generations
+    grouped = []
+    current_text = current_generations = None
+    for generation, text in sorted(generation_texts.items(), reverse=True):
+        if text == current_text:
+            current_generations.append(generation)
         else:
-            start, end = entry
-            if start == end:
-                texts.append('Generation {0}'.format(start))
-            else:
-                texts.append('Generation {0}-{1}'.format(*entry))
-    return '=== %s ===' % ', '.join(texts)
+            current_generations = [generation]
+            current_text = text
+            grouped.append((current_generations, current_text))
+    # Build result
+    result = []
+    for generations, text in grouped:
+        if len(generations) > 1:
+            result.append('=== Generation {0}-{1} ==='.format(
+                    generations[-1], generations[0]))
+        else:
+            result.append('=== Generation {0} ==='.format(generations[0]))
+        result.append(current_text)
+        result.append('\n')
+    return '\n'.join(result).strip()
+
+def format_change(change):
+    result = []
+    for kind, value in change.items():
+        if kind == 'type':
+            result.append('Is a %s-type move.' % value.name)
+        elif kind == 'power':
+            result.append('Base Power is %s.' % value)
+        elif kind == 'pp':
+            result.append('PP is %s.' % value)
+        elif kind == 'accuracy':
+            result.append('Accuracy is %s.' % value)
+        elif kind == 'effect_chance':
+            if 'effect' not in change:
+                result.append('Effect chance is %s%%.' % value)
+        elif kind == 'effect':
+            result.append(value)
+        elif kind == 'effect_change':
+            result.append(value)  # XXX: get rid of this
+        else:
+            raise ValueError(kind)
+    return '\n'.join(result)
 
 def remove_refs(text):
     return re.sub(r'<ref>([^<]|<(?!/ref>))*</ref>', '', text)
 
-def get_effect_diff(section, effect, changelog=[], generation_introduced=None):
+def get_effect_diff(section, effect, changelog={}, generation_introduced=None):
     wikitexts = ['== Effect ==']
-    if changelog:
-        wikitexts.append(get_generation_heading(None, changelog[0], generation_introduced))
-    else:
-        wikitexts.append(get_generation_heading(None, None, generation_introduced))
-    wikitexts.append(markdown_to_wikitext(effect))
-    previous_change_next = zip(
-            changelog,
-            changelog[1:] + [None]
-        )
-    for change, next in previous_change_next:
-        wikitexts.append('')
-        wikitexts.append(get_generation_heading(change, next, generation_introduced))
-        changes = []
-        try:
-            change.type
-        except AttributeError:
-            pass
-        else:
-            if change.type:
-                changes.append('Is a %s-type move.' % change.type.name)
-            if change.power:
-                changes.append('Base Power is %s.' % change.power)
-            if change.pp:
-                changes.append('PP is %s.' % change.pp)
-            if change.accuracy:
-                changes.append('Accuracy is %s.' % change.accuracy)
-            if change.effect_chance and not change.effect:
-                changes.append('Effect chance is %s%%.' % change.effect_chance)
-        if change.effect:
-            changes.append(markdown_to_wikitext(change.effect))
-        wikitexts.append(' '.join(changes))
+    wikitexts.append(format_changelog(changelog))
     section_text = unicode(section)
     section_text = remove_refs(section_text)
     section_text = re.sub(r'\[\[Category:[A-Za-z ]*\]\]', '', section_text)
@@ -275,7 +271,7 @@ def analyze_move(article, move):
         header_name = section.header.name.strip()
         if header_name == 'Effect':
             return get_effect_diff(section, move.effect,
-                combined_move_changelog(move), move.generation)
+                get_move_changelog(move), move.generation)
     else:
         return False
 
