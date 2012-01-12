@@ -8,6 +8,8 @@ import stat
 from textwrap import dedent
 from collections import defaultdict, OrderedDict
 
+from sqlalchemy.orm import joinedload
+
 from pokedex.db import connect, tables, markdown, util
 from lxml import etree
 import termcolor
@@ -16,7 +18,19 @@ from diff_match_patch import diff_match_patch
 from pokemwdb.wikicache import WikiCache
 from pokemwdb import wikiparse
 
-session = connect()
+
+#stdout = sys.stdout
+#import traceback
+#class F(object):
+    #def write(self, s):
+        #stdout.write('---\n')
+        #stdout.write(s)
+        #stdout.write(''.join(traceback.format_stack()))
+        #stdout.write('---\n\n')
+#sys.stdout = F()
+#session = connect(engine_args=dict(echo=True))
+
+session = connect() #engine_args=dict(echo=True))
 wiki = WikiCache('http://wiki.pokemon-online.eu/api.php?')
 
 version_groups = session.query(tables.VersionGroup).order_by(
@@ -183,7 +197,7 @@ def get_move_changelog(move):
         if version.effect_id != move.effect_id:
             changes['effect'] = markdown_to_wikitext(version.effect)
         for change in move.move_effect.changelog:
-            if vg.id < change.changed_in.id:
+            if vg.order < change.changed_in.order:
                 changes['effect_change'] = markdown_to_wikitext(change.effect)
         if changes:
             unchanged = False
@@ -222,8 +236,7 @@ def format_changelog(changelog):
                     generations[-1], generations[0]))
         else:
             result.append('=== Generation {0} ==='.format(generations[0]))
-        result.append(current_text)
-        result.append('\n')
+        result.append(text + '\n')
     return '\n'.join(result).strip()
 
 def format_change(change):
@@ -246,7 +259,7 @@ def format_change(change):
             result.append(value)  # XXX: get rid of this
         else:
             raise ValueError(kind)
-    return '\n'.join(result)
+    return ' '.join(result)
 
 def remove_refs(text):
     return re.sub(r'<ref>([^<]|<(?!/ref>))*</ref>', '', text)
@@ -259,6 +272,7 @@ def get_effect_diff(section, effect, changelog={}, generation_introduced=None):
     section_text = re.sub(r'\[\[Category:[A-Za-z ]*\]\]', '', section_text)
     section_text = re.sub(r'\{\{(movestub|StubItem|StubAbility) \| \}\}', '', section_text)
     section_text = re.sub(r'\{\{[Ii]mported *\| *[A-Za-z]*\}\}', '', section_text)
+    section_text = re.sub(r' *\{\{verify[^}]*\}\}\n?', '', section_text)
     section_text = section_text.strip()
     wikitext = '\n'.join(wikitexts)
     if wikitext == section_text:
@@ -382,7 +396,10 @@ def main():
             else:
                 good_articles.add(name)
 
-        for move in sorted(session.query(tables.Move), key=lambda m: m.name):
+        q = session.query(tables.Move)
+        q = q.options(joinedload('versions'))
+        #q = q.filter_by(identifier='acid-armor')
+        for move in sorted(q, key=lambda m: m.name):
             wikitext = get_wikitext(move.name, 'move')
             article = wikiparse.wikiparse(wikitext)
             diff = analyze_move(article, move)
