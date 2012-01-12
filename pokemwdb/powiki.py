@@ -155,6 +155,8 @@ def etree_to_wikitext(elem, num=0):
         return '* ' + text + content + tail
     if elem.tag in ('thead', 'tbody', 'ul'):
         return text.strip() + content + tail.strip()
+    if elem.tag == 'code':
+        return '<code>' + text.strip() + content + '</code>' + tail.strip()
     else:
         # XXX
         return '⚠ veekun→wiki script bug: unknown element %s ⚠' % elem.tag + tail
