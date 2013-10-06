@@ -110,7 +110,10 @@ class PokemonInfobox(TemplateTemplate):
     def sdex(self, v): return format(self.dexnums['extended-sinnoh'], '03')
 
     @missing_on(KeyError)
-    def udex(self, v): return format(self.dexnums['unova'], '03')
+    def udex(self, v): return format(self.dexnums['original-unova'], '03')
+
+    @missing_on(KeyError)
+    def u2dex(self, v): return format(self.dexnums['updated-unova'], '03')
 
     fbrow = ignored()
     abrow = ignored()
