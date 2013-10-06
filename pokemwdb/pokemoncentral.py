@@ -163,13 +163,16 @@ class PokemonInfobox(TemplateTemplate):
     def ability2(self, v): return self.species.default_pokemon.abilities[1].name
 
     @param_name('abilitàd')
-    @missing_on(AttributeError)
     def abilityd(self, v):
         poke = self.species.default_pokemon
-        if poke.dream_ability in poke.abilities:
+        if poke.hidden_ability in poke.abilities:
             return None
         else:
-            return self.species.default_pokemon.dream_ability.name
+            ability = self.species.default_pokemon.hidden_ability
+            if ability:
+                return ability.name
+            else:
+                return None
 
 
     def _egggroup(num):
