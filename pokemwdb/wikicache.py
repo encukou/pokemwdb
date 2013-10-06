@@ -5,6 +5,7 @@ import time
 import collections
 import functools
 import re
+import json
 
 from sqlalchemy.ext.declarative import declarative_base, DeclarativeMeta
 from sqlalchemy import Column, ForeignKey, MetaData, PrimaryKeyConstraint, Table, UniqueConstraint
@@ -194,8 +195,9 @@ class WikiCache(object):
 
     def apirequest(self, **params):
         """MW API request; returns result dict"""
-        params['format'] = 'yaml'
-        return yaml.load(self._apirequest_raw(**params))
+        params['format'] = 'json'
+        result = self._apirequest_raw(**params)
+        return json.load(result)
 
     def update(self):
         """Fetch a batch of page changes from the server"""
@@ -309,7 +311,7 @@ class WikiCache(object):
                 assert 'normalized' not in result['query'], (
                         result['query']['normalized'])  # XXX: normalization
                 pages_by_title = dict((p.title, p) for p in chunk)
-                for page_info in result['query'].get('pages', []):
+                for page_info in result['query'].get('pages', {}).values():
                     page = pages_by_title[page_info['title']]
                     self.session.add(page)
                     if 'missing' in page_info:
